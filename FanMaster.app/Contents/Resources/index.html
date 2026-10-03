@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FanMaster — Mac mini</title>
+<style>
+/* ============================================================
+   FanMaster — Apple HIG Minimalist Interface (Tabs & Settings)
+   macOS Dark Mode • Tabular Numerics • Zero Emojis
+   ============================================================ */
+
+:root {
+  --bg-window:      #16161a;
+  --bg-card:        rgba(30, 30, 36, 0.72);
+  --bg-card-hover:  rgba(38, 38, 46, 0.85);
+  --bg-control:     rgba(255, 255, 255, 0.06);
+  --bg-control-act: rgba(255, 255, 255, 0.16);
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-focus:   #0a84ff;
+  
+  --system-blue:    #0a84ff;
+  --system-teal:    #64d2ff;
+  --system-green:   #30d158;
+  --system-orange:  #ff9f0a;
+  --system-red:     #ff453a;
+  
+  --text-primary:   rgba(255, 255, 255, 0.94);
+  --text-secondary: rgba(255, 255, 255, 0.60);
+  --text-tertiary:  rgba(255, 255, 255, 0.36);
+  
+  --radius-sm:      6px;
+  --radius-md:      10px;
+  --radius-lg:      14px;
+  --font-system:    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
+  --transition:     0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: var(--font-system);
+  background-color: var(--bg-window);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.45;
+  user-select: none;
+  overflow-x: hidden;
+}
+
+.num, .tabular {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   WINDOW HEADER & TOOLBAR
+   ============================================================ */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(22, 22, 26, 0.90);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--system-blue);
+  flex-shrink: 0;
+}
+
+.brand-info h1 {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.brand-info span {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.pill-badge.active {
+  background: rgba(48, 209, 88, 0.12);
+  border-color: rgba(48, 209, 88, 0.28);
+  color: var(--system-green);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-dot.pulse {
+  animation: dotPulse 2s infinite ease-in-out;
+}
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.clock-text {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  margin-inline-start: 4px;
+}
+
+/* ============================================================
+   APPLE HIG SEGMENTED TAB BAR
+   ============================================================ */
+.tab-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-nav {
+  display: inline-flex;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 4px;
+}
+
+.tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.tab-btn svg {
+  width: 14px;
+  height: 14px;
+  opacity: 0.8;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+}
+
+.tab-btn.active {
+  background: var(--bg-control-act);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.tab-btn.active svg {
+  color: var(--system-blue);
+  opacity: 1;
+}
+
+/* ============================================================
+   MAIN CONTENT & TAB PAGES
+   ============================================================ */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px 24px;
+}
+
+.tab-content {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.18s ease-out;
+}
+
+.tab-content.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color var(--transition);
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.card-title svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-tertiary);
+}
+
+.card-badge {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.grid-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 780px) {
+  .grid-columns { grid-template-columns: 1fr; }
+}
+
+/* Fan Card */
+.fan-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+}
+
+.fan-metrics {
+  display: flex;
+  flex-direction: column;
+}
+
+.fan-rpm-large {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.fan-rpm-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.fan-icon-wrap {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+}
+
+.fan-svg {
+  width: 36px;
+  height: 36px;
+  color: var(--system-blue);
+  transform-origin: center center;
+  animation: fanSpin 2.5s linear infinite;
+}
+
+@keyframes fanSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.progress-track {
+  width: 100%;
+  height: 5px;
+  background: var(--bg-control);
+  border-radius: 100px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--system-blue);
+  border-radius: 100px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.scale-limits {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+}
+
+.segmented-control {
+  display: flex;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  gap: 2px;
+}
+
+.segment-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.segment-btn:hover {
+  color: var(--text-primary);
+}
+
+.segment-btn.active {
+  background: var(--bg-control-act);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* CPU Card */
+.temp-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+}
+
+.temp-large {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--system-green);
+  transition: color 0.4s ease;
+}
+
+.temp-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.thermal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+}
+
+.thermal-badge.normal {
+  background: rgba(48, 209, 88, 0.12);
+  border-color: rgba(48, 209, 88, 0.28);
+  color: var(--system-green);
+}
+
+.thermal-badge.moderate {
+  background: rgba(255, 214, 10, 0.12);
+  border-color: rgba(255, 214, 10, 0.28);
+  color: var(--system-orange);
+}
+
+.thermal-badge.critical {
+  background: rgba(255, 69, 58, 0.14);
+  border-color: rgba(255, 69, 58, 0.32);
+  color: var(--system-red);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.stat-box {
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-box .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+.stat-box .val {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Profiles row */
+.profiles-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .profiles-row { grid-template-columns: 1fr 1fr; }
+}
+
+.profile-card {
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.profile-card:hover {
+  background: var(--bg-control-act);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.profile-card.active {
+  background: rgba(10, 132, 255, 0.12);
+  border-color: var(--system-blue);
+}
+
+.profile-card .p-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.profile-card.active .p-name {
+  color: var(--system-blue);
+}
+
+.profile-card .p-desc {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  line-height: 1.3;
+}
+
+/* Curve Visualizer */
+.curve-canvas-wrap {
+  width: 100%;
+  height: 140px;
+  position: relative;
+  margin-top: 4px;
+}
+
+canvas#curveCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ============================================================
+   TAB 2: HARDWARE SENSORS DIRECTORY
+   ============================================================ */
+.sensors-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sensors-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sensors-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.sensors-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sensor-key-tag {
+  font-family: Menlo, Monaco, monospace;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-control);
+  color: var(--text-tertiary);
+}
+
+.sensor-bar-wrap {
+  width: 100%;
+  max-width: 160px;
+  height: 4px;
+  background: var(--bg-control);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.sensor-bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.4s ease;
+}
+
+.temp-tag {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+  min-width: 58px;
+  text-align: right;
+}
+
+/* ============================================================
+   TAB 3: SETTINGS MENU
+   ============================================================ */
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 60%;
+}
+
+.setting-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.setting-desc {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.setting-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.setting-select {
+  background: var(--bg-control);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+}
+
+.setting-select option {
+  background: #1a1a20;
+  color: #fff;
+}
+
+.range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.range-input {
+  accent-color: var(--system-blue);
+  cursor: pointer;
+}
+
+.save-pill-btn {
+  background: var(--system-blue);
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.save-pill-btn:hover {
+  opacity: 0.85;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/>
+        <path d="M12 12c-2.5-2.5-1.5-6.5 0-7 1.5 0.5 2.5 4.5 0 7z"/>
+        <path d="M12 12c2.5-2.5 6.5-1.5 7 0-0.5 1.5-4.5 2.5-7 0z"/>
+        <path d="M12 12c2.5 2.5 1.5 6.5 0 7-1.5-0.5-2.5-4.5 0-7z"/>
+        <path d="M12 12c-2.5 2.5-6.5 1.5-7 0 0.5-1.5 4.5-2.5 7 0z"/>
+        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+      </svg>
+      <div class="brand-info">
+        <h1>FanMaster</h1>
+        <span>Mac mini (Late 2012) • AppleSMC</span>
+      </div>
+    </div>
+
+    <div class="toolbar-controls">
+      <div id="connection-pill" class="pill-badge active">
+        <span class="status-dot pulse"></span>
+        <span id="connection-text">SMC Enlazado</span>
+      </div>
+
+      <div id="root-pill" class="pill-badge active">
+        <span id="root-text">Control Activo</span>
+      </div>
+
+      <span id="clock-display" class="clock-text">--:--:--</span>
+    </div>
+  </div>
+
+  <!-- NAVIGATION TABS -->
+  <div class="tab-bar-container">
+    <nav class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('control')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Control y Curvas
+      </button>
+      <button class="tab-btn" onclick="switchTab('sensors')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+          <rect x="9" y="9" width="6" height="6"/>
+          <line x1="9" y1="1" x2="9" y2="4"/>
+          <line x1="15" y1="1" x2="15" y2="4"/>
+          <line x1="9" y1="20" x2="9" y2="23"/>
+          <line x1="15" y1="20" x2="15" y2="23"/>
+          <line x1="20" y1="9" x2="23" y2="9"/>
+          <line x1="20" y1="15" x2="23" y2="15"/>
+          <line x1="1" y1="9" x2="4" y2="9"/>
+          <line x1="1" y1="15" x2="4" y2="15"/>
+        </svg>
+        Sensores (<span id="tab-sensor-count">9</span>)
+      </button>
+      <button class="tab-btn" onclick="switchTab('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Configuración
+      </button>
+    </nav>
+  </div>
+</header>
+
+<!-- MAIN PAGES -->
+<main>
+
+  <!-- PESTAÑA 1: CONTROL Y CURVAS -->
+  <div id="tab-control" class="tab-content active">
+
+    <div class="grid-columns">
+      <!-- TARJETA VENTILADOR -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            Ventilador Principal
+          </div>
+          <div class="card-badge" id="fan-target-badge">Objetivo: -- RPM</div>
+        </div>
+
+        <div class="fan-display">
+          <div class="fan-metrics">
+            <div id="fan-rpm-val" class="fan-rpm-large num">----</div>
+            <div class="fan-rpm-unit">Revoluciones por Minuto</div>
+          </div>
+
+          <div class="fan-icon-wrap">
+            <svg id="fan-animated-svg" class="fan-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 12c-2.5-2.5-1.5-6.5 0-7 1.5 0.5 2.5 4.5 0 7z"/>
+              <path d="M12 12c2.5-2.5 6.5-1.5 7 0-0.5 1.5-4.5 2.5-7 0z"/>
+              <path d="M12 12c2.5 2.5 1.5 6.5 0 7-1.5-0.5-2.5-4.5 0-7z"/>
+              <path d="M12 12c-2.5 2.5-6.5 1.5-7 0 0.5-1.5 4.5-2.5 7 0z"/>
+              <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="fan-bar-container">
+          <div class="progress-track">
+            <div id="fan-progress-fill" class="progress-fill" style="width: 0%;"></div>
+          </div>
+          <div class="scale-limits">
+            <span id="fan-min-lbl">1,800 RPM (Mín)</span>
+            <span id="fan-pct-lbl" style="color:var(--text-secondary)">--%</span>
+            <span id="fan-max-lbl">5,500 RPM (Máx)</span>
+          </div>
+        </div>
+
+        <!-- Mode Segmented Control -->
+        <div class="segmented-control">
+          <button id="mode-auto" class="segment-btn" onclick="setMode('auto')">Automático (Apple)</button>
+          <button id="mode-curve" class="segment-btn active" onclick="setMode('curve')">Curva Inteligente</button>
+          <button id="mode-max" class="segment-btn" onclick="setMode('max')">Máximo (5,500)</button>
+        </div>
+      </div>
+
+      <!-- TARJETA SENSOR PRINCIPAL -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+              <circle cx="11.5" cy="17.5" r="2" fill="currentColor"/>
+            </svg>
+            <span id="primary-sensor-header">Sensor Principal — CPU Die</span>
+          </div>
+          <div id="thermal-status-pill" class="thermal-badge normal">Temperatura Óptima</div>
+        </div>
+
+        <div class="temp-display">
+          <div>
+            <div id="cpu-temp-val" class="temp-large num">--.-°</div>
+            <div class="temp-unit" id="primary-sensor-subtitle">Celsius • Núcleo Térmico</div>
+          </div>
+
+          <div class="stat-box" style="min-width: 100px;">
+            <span class="label">Carga CPU</span>
+            <span id="cpu-usage-val" class="val">--%</span>
+          </div>
+        </div>
+
+        <div class="progress-track">
+          <div id="cpu-usage-bar" class="progress-fill" style="width: 0%; background: var(--system-teal);"></div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="label">Mínima</span>
+            <span id="stat-min" class="val">--.-°C</span>
+          </div>
+          <div class="stat-box">
+            <span class="label">Promedio</span>
+            <span id="stat-avg" class="val">--.-°C</span>
+          </div>
+          <div class="stat-box">
+            <span class="label">Máxima</span>
+            <span id="stat-max" class="val">--.-°C</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CURVA Y PERFILES -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"/>
+            <line x1="4" y1="10" x2="4" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12" y2="3"/>
+            <line x1="20" y1="21" x2="20" y2="16"/>
+            <line x1="20" y1="12" x2="20" y2="3"/>
+            <line x1="1" y1="14" x2="7" y2="14"/>
+            <line x1="9" y1="8" x2="15" y2="8"/>
+            <line x1="17" y1="16" x2="23" y2="16"/>
+          </svg>
+          Perfiles de Curva Térmica
+        </div>
+        <div class="card-badge" id="active-profile-label">Perfil: Equilibrado</div>
+      </div>
+
+      <div class="profiles-row" id="profiles-container">
+        <!-- Dynamically rendered -->
+      </div>
+
+      <div class="curve-canvas-wrap">
+        <canvas id="curveCanvas"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PESTAÑA 2: SENSORES DE HARDWARE -->
+  <div id="tab-sensors" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <rect x="9" y="9" width="6" height="6"/>
+            <line x1="9" y1="1" x2="9" y2="4"/>
+            <line x1="15" y1="1" x2="15" y2="4"/>
+            <line x1="9" y1="20" x2="9" y2="23"/>
+            <line x1="15" y1="20" x2="15" y2="23"/>
+            <line x1="20" y1="9" x2="23" y2="9"/>
+            <line x1="20" y1="15" x2="23" y2="15"/>
+            <line x1="1" y1="9" x2="4" y2="9"/>
+            <line x1="1" y1="15" x2="4" y2="15"/>
+          </svg>
+          Directorio Completo de Sensores SMC
+        </div>
+        <div class="card-badge" id="sensors-count-badge">-- Sensores</div>
+      </div>
+
+      <table class="sensors-table">
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Clave SMC</th>
+            <th>Nivel Térmico</th>
+            <th style="text-align:right">Temperatura</th>
+          </tr>
+        </thead>
+        <tbody id="sensors-table-body">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 3: CONFIGURACIÓN -->
+  <div id="tab-settings" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Configuración de la Barra de Menús y Monitor
+        </div>
+      </div>
+
+      <div class="settings-group">
+
+        <!-- Sensor Selector for Menu Bar -->
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Sensor en la Barra de Menús</span>
+            <span class="setting-desc">Elige qué sensor térmico se muestra en la barra superior de macOS (resuelve el valor estático de sensores no conectados).</span>
+          </div>
+          <div class="setting-control">
+            <select id="cfg-sensor-select" class="setting-select" onchange="saveSetting('menuBarSensorKey', this.value)">
+              <option value="TC0D">CPU Die (TC0D) — Predeterminado</option>
+              <option value="TC0P">CPU Proximity (TC0P)</option>
+              <option value="TC0E">CPU Die 2 (TC0E)</option>
+              <option value="TC0F">CPU Die 3 (TC0F)</option>
+              <option value="TPCD">PCH Die (TPCD)</option>
+              <option value="TW0P">Airport Proximity (TW0P)</option>
+              <option value="MAX">Sensor más caliente (Dinámico)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Display Mode in Menu Bar -->
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Formato de Texto en Barra Superior</span>
+            <span class="setting-desc">Personaliza el formato visible junto al reloj de macOS.</span>
+          </div>
+          <div class="setting-control">
+            <select id="cfg-mode-select" class="setting-select" onchange="saveSetting('menuBarDisplayMode', this.value)">
+              <option value="tempAndRpm">Temperatura y RPM (64°C  4,700 RPM)</option>
+              <option value="tempOnly">Solo Temperatura (64°C)</option>
+              <option value="rpmOnly">Solo RPM (4,700 RPM)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Update Interval -->
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Frecuencia de Actualización</span>
+            <span class="setting-desc">Intervalo de lectura del chip SMC y refresco de interfaz.</span>
+          </div>
+          <div class="setting-control">
+            <select id="cfg-interval-select" class="setting-select" onchange="saveSetting('interval', this.value)">
+              <option value="1">1 segundo</option>
+              <option value="2" selected>2 segundos (Recomendado)</option>
+              <option value="3">3 segundos</option>
+              <option value="5">5 segundos</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Alert Threshold -->
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Umbral de Alerta Térmica</span>
+            <span class="setting-desc">Temperatura a partir de la cual se notifica aviso de sobrecalentamiento.</span>
+          </div>
+          <div class="setting-control range-wrap">
+            <input type="range" id="cfg-threshold-range" class="range-input" min="70" max="95" value="85" oninput="document.getElementById('threshold-val').textContent = this.value + '°C'" onchange="saveSetting('alertThreshold', this.value)">
+            <span id="threshold-val" class="num" style="font-size:13px;font-weight:600;min-width:40px">85°C</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SISTEMA Y ESTADO DAEMON -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          Información del Sistema y Demonio de Fondo
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Servicio en Segundo Plano (LaunchDaemon)</span>
+            <span class="setting-desc">Permite a FanMaster proteger y regular los ventiladores incluso con el Mac bloqueado.</span>
+          </div>
+          <div class="setting-control">
+            <span class="pill-badge active">
+              <span class="status-dot"></span>
+              com.fanmaster.daemon (Activo)
+            </span>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Plataforma Hardware</span>
+            <span class="setting-desc">Mac mini (Late 2012) • Arquitectura Intel Core Ivy Bridge con AppleSMC de doble canal.</span>
+          </div>
+          <div class="setting-control">
+            <span style="font-size:12px;color:var(--text-tertiary)">Macmini6,1 / 6,2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ============================================================
+   FanMaster Frontend Controller — Tabs, Settings & Clean Logic
+   ============================================================ */
+
+let state = {
+  temperatures: [],
+  fans: [],
+  cpuUsage: 0,
+  activeProfile: 'balanced',
+  isRoot: true,
+  alertThreshold: 85,
+  timestamp: 0
+};
+
+let config = {
+  menuBarSensorKey: 'TC0D',
+  menuBarDisplayMode: 'tempAndRpm',
+  updateInterval: 2,
+  alertTempThreshold: 85
+};
+
+let profilesData = [];
+let currentTab = 'control';
+
+const curveCanvas = document.getElementById('curveCanvas');
+const ctx = curveCanvas ? curveCanvas.getContext('2d') : null;
+
+// Tab switcher
+function switchTab(tabId) {
+  currentTab = tabId;
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick').includes(tabId));
+  });
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.toggle('active', content.id === `tab-${tabId}`);
+  });
+  if (tabId === 'control') {
+    setTimeout(drawCurve, 50);
+  }
+}
+
+// Clock
+function tickClock() {
+  const now = new Date();
+  const el = document.getElementById('clock-display');
+  if (el) el.textContent = now.toLocaleTimeString('es-ES', { hour12: false });
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// Fetch status from API
+async function refreshStatus() {
+  try {
+    const res = await fetch('/api/status');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    state = await res.json();
+    renderAll();
+    setConnectionState(true);
+  } catch (err) {
+    setConnectionState(false);
+  }
+}
+
+async function loadConfig() {
+  try {
+    const res = await fetch('/api/config');
+    if (res.ok) {
+      config = await res.json();
+      applyConfigToUI();
+    }
+  } catch (_) {}
+}
+
+async function saveSetting(key, val) {
+  try {
+    await fetch(`/api/config?${key}=${encodeURIComponent(val)}`, { method: 'POST' });
+    config[key] = val;
+    loadConfig();
+  } catch (_) {}
+}
+
+function applyConfigToUI() {
+  const sSensor = document.getElementById('cfg-sensor-select');
+  if (sSensor && config.menuBarSensorKey) sSensor.value = config.menuBarSensorKey;
+
+  const sMode = document.getElementById('cfg-mode-select');
+  if (sMode && config.menuBarDisplayMode) sMode.value = config.menuBarDisplayMode;
+
+  const sInterval = document.getElementById('cfg-interval-select');
+  if (sInterval && config.updateInterval) sInterval.value = String(Math.round(config.updateInterval));
+
+  const sThresh = document.getElementById('cfg-threshold-range');
+  const tVal = document.getElementById('threshold-val');
+  if (sThresh && config.alertTempThreshold) {
+    sThresh.value = config.alertTempThreshold;
+    if (tVal) tVal.textContent = config.alertTempThreshold + '°C';
+  }
+}
+
+async function refreshProfiles() {
+  try {
+    const res = await fetch('/api/profiles');
+    if (res.ok) {
+      profilesData = await res.json();
+      renderProfiles();
+    }
+  } catch (_) {}
+}
+
+function setConnectionState(online) {
+  const pill = document.getElementById('connection-pill');
+  const text = document.getElementById('connection-text');
+  if (online) {
+    pill.className = 'pill-badge active';
+    text.textContent = 'SMC Enlazado';
+  } else {
+    pill.className = 'pill-badge';
+    text.textContent = 'Reconectando…';
+  }
+}
+
+function renderAll() {
+  renderFanMetrics();
+  renderCPUMetrics();
+  renderSensorsTable();
+  if (currentTab === 'control') {
+    drawCurve();
+  }
+}
+
+function renderFanMetrics() {
+  if (!state.fans || state.fans.length === 0) return;
+  const fan = state.fans[0];
+  const rpm = Math.round(fan.currentRPM);
+  const min = Math.round(fan.minimumRPM || 1800);
+  const max = Math.round(fan.maximumRPM || 5500);
+  const target = Math.round(fan.targetRPM || rpm);
+
+  document.getElementById('fan-rpm-val').textContent = rpm.toLocaleString('es-ES');
+  document.getElementById('fan-target-badge').textContent = `Objetivo: ${target.toLocaleString('es-ES')} RPM`;
+  document.getElementById('fan-min-lbl').textContent = `${min.toLocaleString('es-ES')} RPM`;
+  document.getElementById('fan-max-lbl').textContent = `${max.toLocaleString('es-ES')} RPM`;
+
+  const pct = Math.max(0, Math.min(100, ((rpm - min) / (max - min)) * 100));
+  document.getElementById('fan-progress-fill').style.width = pct.toFixed(1) + '%';
+  document.getElementById('fan-pct-lbl').textContent = Math.round(pct) + '%';
+
+  const fanSvg = document.getElementById('fan-animated-svg');
+  if (fanSvg) {
+    const duration = Math.max(0.3, Math.min(3.5, 4.0 - (pct / 100) * 3.4));
+    fanSvg.style.animationDuration = duration.toFixed(2) + 's';
+  }
+
+  const isAuto = state.activeProfile === 'apple' || state.activeProfile === 'none';
+  const isMax = state.activeProfile === 'max';
+  document.getElementById('mode-auto').className = 'segment-btn' + (isAuto ? ' active' : '');
+  document.getElementById('mode-curve').className = 'segment-btn' + (!isAuto && !isMax ? ' active' : '');
+  document.getElementById('mode-max').className = 'segment-btn' + (isMax ? ' active' : '');
+}
+
+function renderCPUMetrics() {
+  // Use selected primary sensor (default: TC0D CPU Die)
+  const targetKey = config.menuBarSensorKey || 'TC0D';
+  let cpuSensor;
+  if (targetKey === 'MAX') {
+    cpuSensor = state.temperatures.filter(s => s.key !== 'TC0G').sort((a,b) => b.temp - a.temp)[0];
+  } else {
+    cpuSensor = state.temperatures.find(s => s.key === targetKey) || state.temperatures.find(s => s.key === 'TC0D') || state.temperatures[0];
+  }
+  if (!cpuSensor) return;
+
+  const temp = cpuSensor.temp;
+  const tempEl = document.getElementById('cpu-temp-val');
+  tempEl.textContent = temp.toFixed(1) + '°';
+
+  const headerLabel = document.getElementById('primary-sensor-header');
+  if (headerLabel) headerLabel.textContent = `Sensor Principal — ${cpuSensor.name}`;
+
+  let color = 'var(--system-green)';
+  let statusText = 'Temperatura Óptima';
+  let badgeClass = 'thermal-badge normal';
+
+  if (temp >= 90) {
+    color = 'var(--system-red)';
+    statusText = 'Temperatura Crítica';
+    badgeClass = 'thermal-badge critical';
+  } else if (temp >= 80) {
+    color = 'var(--system-orange)';
+    statusText = 'Temperatura Elevada';
+    badgeClass = 'thermal-badge moderate';
+  } else if (temp >= 65) {
+    color = 'var(--system-orange)';
+    statusText = 'Temperatura Moderada';
+    badgeClass = 'thermal-badge moderate';
+  }
+
+  tempEl.style.color = color;
+  const statusPill = document.getElementById('thermal-status-pill');
+  statusPill.textContent = statusText;
+  statusPill.className = badgeClass;
+
+  const cpuPct = Math.round((state.cpuUsage || 0) * 100);
+  document.getElementById('cpu-usage-val').textContent = cpuPct + '%';
+  document.getElementById('cpu-usage-bar').style.width = cpuPct + '%';
+
+  const history = cpuSensor.history || [];
+  if (history.length > 0) {
+    const vals = history.map(h => h.v);
+    const minVal = Math.min(...vals);
+    const maxVal = Math.max(...vals);
+    const avgVal = vals.reduce((a, b) => a + b, 0) / vals.length;
+    document.getElementById('stat-min').textContent = minVal.toFixed(1) + '°C';
+    document.getElementById('stat-avg').textContent = avgVal.toFixed(1) + '°C';
+    document.getElementById('stat-max').textContent = maxVal.toFixed(1) + '°C';
+  }
+}
+
+function renderProfiles() {
+  const container = document.getElementById('profiles-container');
+  if (!profilesData || profilesData.length === 0) return;
+
+  container.innerHTML = '';
+  profilesData.forEach(p => {
+    const card = document.createElement('div');
+    const isActive = (state.activeProfile === p.id);
+    card.className = 'profile-card' + (isActive ? ' active' : '');
+    card.onclick = () => applyProfile(p.id);
+
+    let desc = 'Regulación térmica automática.';
+    if (p.id === 'balanced') desc = 'Equilibrio acústico y térmico eficiente.';
+    else if (p.id === 'silent') desc = 'Prioriza acústica relajando el ventilador.';
+    else if (p.id === 'performance') desc = 'Enfriamiento reactivo ante cargas elevadas.';
+    else if (p.id === 'max') desc = 'Régimen máximo (5,500 RPM) continuo.';
+
+    card.innerHTML = `
+      <div class="p-name">${p.name}</div>
+      <div class="p-desc">${desc}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  const activeLabel = document.getElementById('active-profile-label');
+  const activeObj = profilesData.find(p => p.id === state.activeProfile);
+  if (activeLabel) {
+    activeLabel.textContent = `Perfil: ${activeObj ? activeObj.name : 'Equilibrado'}`;
+  }
+}
+
+async function applyProfile(profileId) {
+  try {
+    const res = await fetch(`/api/profile/apply?id=${profileId}`, { method: 'POST' });
+    if (res.ok) {
+      state.activeProfile = profileId;
+      renderProfiles();
+      renderFanMetrics();
+      drawCurve();
+    }
+  } catch (_) {}
+}
+
+async function setMode(mode) {
+  if (mode === 'auto') {
+    try {
+      await fetch('/api/control/auto', { method: 'POST' });
+      state.activeProfile = 'apple';
+      renderAll();
+    } catch (_) {}
+  } else if (mode === 'curve') {
+    applyProfile('balanced');
+  } else if (mode === 'max') {
+    applyProfile('max');
+  }
+}
+
+function renderSensorsTable() {
+  const tbody = document.getElementById('sensors-table-body');
+  if (!tbody || !state.temperatures) return;
+
+  const validSensors = state.temperatures.filter(s => s.key !== 'TC0G');
+  document.getElementById('sensors-count-badge').textContent = `${validSensors.length} Sensores Activos`;
+  document.getElementById('tab-sensor-count').textContent = validSensors.length;
+
+  tbody.innerHTML = '';
+  const sorted = [...validSensors].sort((a, b) => b.temp - a.temp);
+
+  sorted.forEach(sensor => {
+    const tr = document.createElement('tr');
+    const temp = sensor.temp;
+
+    let barColor = 'var(--system-green)';
+    if (temp >= 85) barColor = 'var(--system-red)';
+    else if (temp >= 70) barColor = 'var(--system-orange)';
+    else if (temp >= 55) barColor = 'var(--system-teal)';
+
+    const pct = Math.max(0, Math.min(100, temp));
+
+    tr.innerHTML = `
+      <td>
+        <div style="font-weight:500">${sensor.name}</div>
+      </td>
+      <td>
+        <span class="sensor-key-tag">${sensor.key}</span>
+      </td>
+      <td>
+        <div class="sensor-bar-wrap">
+          <div class="sensor-bar-fill" style="width: ${pct}%; background: ${barColor};"></div>
+        </div>
+      </td>
+      <td style="text-align:right">
+        <span class="temp-tag" style="color:${barColor}">${temp.toFixed(1)}°C</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// Curve Canvas
+function drawCurve() {
+  if (!ctx || !curveCanvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = curveCanvas.getBoundingClientRect();
+
+  if (curveCanvas.width !== rect.width * dpr || curveCanvas.height !== rect.height * dpr) {
+    curveCanvas.width = rect.width * dpr;
+    curveCanvas.height = rect.height * dpr;
+  }
+
+  ctx.save();
+  ctx.scale(dpr, dpr);
+  const w = rect.width;
+  const h = rect.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const padL = 36, padR = 20, padT = 12, padB = 22;
+  const graphW = w - padL - padR;
+  const graphH = h - padT - padB;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (graphH / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+
+    const rpmVal = Math.round(5500 - (3700 / 4) * i);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.font = '9px -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(rpmVal, padL - 6, y + 3);
+  }
+
+  const activeObj = profilesData.find(p => p.id === state.activeProfile) || {
+    curvePoints: [
+      { temperature: 40, fanSpeed: 1800 },
+      { temperature: 65, fanSpeed: 2500 },
+      { temperature: 80, fanSpeed: 4200 },
+      { temperature: 92, fanSpeed: 5500 }
+    ]
+  };
+
+  const points = activeObj.curvePoints || [];
+  if (points.length < 2) { ctx.restore(); return; }
+
+  const minTemp = 35, maxTemp = 100;
+  const minRPM = 1800, maxRPM = 5500;
+
+  function toX(t) { return padL + ((t - minTemp) / (maxTemp - minTemp)) * graphW; }
+  function toY(r) { return padT + graphH - ((r - minRPM) / (maxRPM - minRPM)) * graphH; }
+
+  ctx.beginPath();
+  ctx.moveTo(toX(points[0].temperature), toY(points[0].fanSpeed));
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(toX(points[i].temperature), toY(points[i].fanSpeed));
+  }
+  ctx.lineTo(toX(points[points.length - 1].temperature), padT + graphH);
+  ctx.lineTo(toX(points[0].temperature), padT + graphH);
+  ctx.closePath();
+
+  const areaGrad = ctx.createLinearGradient(0, padT, 0, padT + graphH);
+  areaGrad.addColorStop(0, 'rgba(10, 132, 255, 0.22)');
+  areaGrad.addColorStop(1, 'rgba(10, 132, 255, 0.0)');
+  ctx.fillStyle = areaGrad;
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(toX(points[0].temperature), toY(points[0].fanSpeed));
+  for (let i = 1; i < points.length; i++) {
+    ctx.lineTo(toX(points[i].temperature), toY(points[i].fanSpeed));
+  }
+  ctx.strokeStyle = '#0a84ff';
+  ctx.lineWidth = 2.2;
+  ctx.stroke();
+
+  points.forEach(pt => {
+    const px = toX(pt.temperature);
+    const py = toY(pt.fanSpeed);
+    ctx.beginPath();
+    ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#16161a';
+    ctx.fill();
+    ctx.strokeStyle = '#0a84ff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.font = '9px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${pt.temperature}°C`, px, padT + graphH + 13);
+  });
+
+  // Current Operating Point (Live Dot)
+  const targetKey = config.menuBarSensorKey || 'TC0D';
+  const cpuSensor = state.temperatures.find(s => s.key === targetKey) || state.temperatures.find(s => s.key === 'TC0D') || state.temperatures[0];
+  const curFan = state.fans[0];
+  if (cpuSensor && curFan) {
+    const curX = Math.max(padL, Math.min(w - padR, toX(cpuSensor.temp)));
+    const curY = Math.max(padT, Math.min(padT + graphH, toY(curFan.currentRPM)));
+
+    ctx.beginPath();
+    ctx.arc(curX, curY, 7, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(48, 209, 88, 0.25)';
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(curX, curY, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#30d158';
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+window.addEventListener('resize', drawCurve);
+loadConfig().then(() => refreshProfiles().then(refreshStatus));
+setInterval(refreshStatus, 2000);
+</script>
+</body>
+</html>

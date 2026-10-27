@@ -1045,7 +1045,7 @@ input:checked + .slider:before {
       </div>
       <div class="brand-info">
         <h1>FanMaster <span class="version-badge">AppleSMC</span></h1>
-        <span>Mac mini (Late 2012) • Intel Core Ivy Bridge</span>
+        <span id="brand-hardware-info">Detectando hardware…</span>
       </div>
     </div>
 
@@ -1440,10 +1440,10 @@ input:checked + .slider:before {
         <div class="setting-row">
           <div class="setting-meta">
             <span class="setting-title">Plataforma Hardware</span>
-            <span class="setting-desc">Mac mini (Late 2012) • Arquitectura Intel Core Ivy Bridge con AppleSMC de doble canal.</span>
+            <span id="cfg-hardware-desc" class="setting-desc">Detectando plataforma Apple…</span>
           </div>
           <div class="setting-control">
-            <span class="sensor-key-tag">Macmini6,1 / 6,2</span>
+            <span id="cfg-hardware-tag" class="sensor-key-tag">—</span>
           </div>
         </div>
       </div>
@@ -1669,11 +1669,33 @@ function setConnectionState(online) {
 }
 
 function renderAll() {
+  renderSystemInfo();
   renderFanMetrics();
   renderCPUMetrics();
   renderSensorsTable();
   if (currentTab === 'control') {
     drawCurve();
+  }
+}
+
+function renderSystemInfo() {
+  if (!state.system) return;
+  const sys = state.system;
+  
+  const headerSub = document.getElementById('brand-hardware-info');
+  if (headerSub) {
+    const archLabel = sys.architecture === 'arm64' ? 'Apple Silicon' : 'Intel';
+    headerSub.textContent = `${sys.modelName} • ${archLabel}`;
+    headerSub.title = `${sys.processor} (${sys.modelIdentifier}) • macOS ${sys.osVersion}`;
+  }
+  
+  const cfgDesc = document.getElementById('cfg-hardware-desc');
+  if (cfgDesc) {
+    cfgDesc.textContent = `${sys.modelName} • ${sys.processor} • macOS ${sys.osVersion}`;
+  }
+  const cfgTag = document.getElementById('cfg-hardware-tag');
+  if (cfgTag) {
+    cfgTag.textContent = `${sys.modelIdentifier} (${sys.architecture})`;
   }
 }
 

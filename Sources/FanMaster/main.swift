@@ -156,10 +156,10 @@ func main() {
     
     if isCliMode {
         print("""
-        ╔═══════════════════════════════════════════╗
-        ║     🌡️  FanMaster — Mac mini 2012          ║
-        ║     Control de ventiladores y temperatura  ║
-        ╚═══════════════════════════════════════════╝
+        ╔═══════════════════════════════════════════════════════════╗
+        ║     🌡️  FanMaster — \(SystemInfo.marketingModelName)
+        ║     Arquitectura: \(SystemInfo.architecture) • \(SystemInfo.modelIdentifier)
+        ╚═══════════════════════════════════════════════════════════╝
         """)
     }
     
@@ -244,6 +244,13 @@ func main() {
                 "activeProfile": monitor.controller.activeProfile?.id ?? "none",
                 "isRoot": isRoot,
                 "alertThreshold": config.alertTempThreshold,
+                "system": [
+                    "modelIdentifier": SystemInfo.modelIdentifier,
+                    "modelName": SystemInfo.marketingModelName,
+                    "processor": SystemInfo.cpuBrand,
+                    "architecture": SystemInfo.architecture,
+                    "osVersion": SystemInfo.osVersion
+                ],
                 "timestamp": Date().timeIntervalSince1970
             ]
             return (200, "application/json", jsonString(data))
@@ -350,10 +357,8 @@ func main() {
         }
     }
     
-    var serverStarted = false
     do {
         try server.start()
-        serverStarted = true
     } catch {
         if !isCliMode {
             print("ℹ️ Conectado a servicio existente en puerto \(config.port)")

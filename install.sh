@@ -42,28 +42,40 @@ fi
 echo "📦 SDK: $SDK"
 mkdir -p "$BUILD_DIR"
 
-# 2. Compilar binario nativo (AppKit + WebKit + IOKit + Foundation)
-echo "🔨 Compilando binario nativo (Swift + AppKit + WebKit)…"
+# 2. Compilar binario nativo Universal 2 (x86_64 + arm64)
+echo "🔨 Compilando binarios nativos Universal 2 (x86_64 + arm64)…"
 
-swiftc \
-  -sdk "$SDK" \
-  -target x86_64-apple-macos12.0 \
-  -O \
-  -framework IOKit \
-  -framework Foundation \
-  -framework AppKit \
-  -framework WebKit \
-  "$SCRIPT_DIR/Sources/FanMasterCore/SMCConnection.swift" \
-  "$SCRIPT_DIR/Sources/FanMasterCore/Models.swift" \
-  "$SCRIPT_DIR/Sources/FanMasterCore/SMCReaderWriter.swift" \
-  "$SCRIPT_DIR/Sources/FanMasterCore/FanController.swift" \
-  "$SCRIPT_DIR/Sources/FanMasterCore/HTTPServer.swift" \
-  "$SCRIPT_DIR/Sources/FanMaster/HTML.swift" \
-  "$SCRIPT_DIR/Sources/FanMaster/AppDelegate.swift" \
-  "$SCRIPT_DIR/Sources/FanMaster/main.swift" \
-  -o "$BUILD_DIR/FanMaster"
+SOURCES=(
+  "$SCRIPT_DIR/Sources/FanMasterCore/SMCConnection.swift"
+  "$SCRIPT_DIR/Sources/FanMasterCore/Models.swift"
+  "$SCRIPT_DIR/Sources/FanMasterCore/SystemInfo.swift"
+  "$SCRIPT_DIR/Sources/FanMasterCore/SMCReaderWriter.swift"
+  "$SCRIPT_DIR/Sources/FanMasterCore/FanController.swift"
+  "$SCRIPT_DIR/Sources/FanMasterCore/HTTPServer.swift"
+  "$SCRIPT_DIR/Sources/FanMaster/HTML.swift"
+  "$SCRIPT_DIR/Sources/FanMaster/AppDelegate.swift"
+  "$SCRIPT_DIR/Sources/FanMaster/main.swift"
+)
 
-echo "✅ Binario compilado: $BUILD_DIR/FanMaster"
+FRAMEWORKS=(
+  -framework IOKit
+  -framework Foundation
+  -framework AppKit
+  -framework WebKit
+)
+
+echo "   ↳ Compilando slice x86_64 (Intel)…"
+swiftc -sdk "$SDK" -target x86_64-apple-macos12.0 -O "${FRAMEWORKS[@]}" "${SOURCES[@]}" -o "$BUILD_DIR/FanMaster-x86_64"
+
+echo "   ↳ Compilando slice arm64 (Apple Silicon)…"
+if swiftc -sdk "$SDK" -target arm64-apple-macos12.0 -O "${FRAMEWORKS[@]}" "${SOURCES[@]}" -o "$BUILD_DIR/FanMaster-arm64" 2>/dev/null; then
+    echo "   ↳ Unificando arquitectura Universal 2 con lipo…"
+    lipo -create "$BUILD_DIR/FanMaster-x86_64" "$BUILD_DIR/FanMaster-arm64" -output "$BUILD_DIR/FanMaster"
+    echo "✅ Binario Universal 2 generado: $(lipo -archs "$BUILD_DIR/FanMaster")"
+else
+    echo "⚠️ Cross-compilación arm64 no soportada por el SDK actual. Usando binario host x86_64."
+    cp "$BUILD_DIR/FanMaster-x86_64" "$BUILD_DIR/FanMaster"
+fi
 
 # 3. Construir FanMaster.app Bundle
 echo "📦 Creando $APP_NAME…"
@@ -131,9 +143,12 @@ codesign --force --deep --sign - "$TARGET_APP" 2>/dev/null || true
 
 # 5. Instalar herramienta de terminal en /usr/local/bin y ~/.local/bin
 mkdir -p "$HOME/.local/bin"
+mkdir -p "$HOME/.local/share/fanmaster"
 cp "$BUILD_DIR/FanMaster" "$HOME/.local/bin/fanmaster"
+cp "$SCRIPT_DIR/Sources/FanMaster/index.html" "$HOME/.local/share/fanmaster/index.html"
 cp "$BUILD_DIR/FanMaster" "$CLI_TARGET" 2>/dev/null || sudo cp "$BUILD_DIR/FanMaster" "$CLI_TARGET"
 chmod 755 "$CLI_TARGET" 2>/dev/null || true
+mkdir -p "/usr/local/share/fanmaster" 2>/dev/null && cp "$SCRIPT_DIR/Sources/FanMaster/index.html" "/usr/local/share/fanmaster/index.html" 2>/dev/null || true
 
 # 6. Configurar auto-inicio minimizado en la barra de menús (LaunchAgent)
 echo "🚀 Configurando auto-inicio minimizado en la barra superior…"

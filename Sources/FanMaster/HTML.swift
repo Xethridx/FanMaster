@@ -16,13 +16,20 @@ func getIndexHTML() -> String {
     candidates.append(exeDir.appendingPathComponent("../Resources/index.html"))
     candidates.append(exeDir.appendingPathComponent("index.html"))
     
-    // 3. Project directory
-    candidates.append(URL(fileURLWithPath: "/Users/mac/Documents/FanMaster/Sources/FanMaster/index.html"))
-    candidates.append(URL(fileURLWithPath: "/Users/mac/Documents/FanMaster/FanMaster.app/Contents/Resources/index.html"))
+    // 3. Current Working Directory (if running from source checkout / git repo)
+    let cwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    candidates.append(cwd.appendingPathComponent("Sources/FanMaster/index.html"))
+    candidates.append(cwd.appendingPathComponent("index.html"))
     
-    // 4. CLI installation directory ~/.local/bin/index.html
+    // 4. Shared system directories for CLI daemon
+    candidates.append(URL(fileURLWithPath: "/usr/local/share/fanmaster/index.html"))
+    candidates.append(URL(fileURLWithPath: "/Library/Application Support/FanMaster/index.html"))
+    
+    // 5. User home directory locations
     let home = FileManager.default.homeDirectoryForCurrentUser
+    candidates.append(home.appendingPathComponent(".local/share/fanmaster/index.html"))
     candidates.append(home.appendingPathComponent(".local/bin/index.html"))
+    candidates.append(home.appendingPathComponent("Library/Application Support/FanMaster/index.html"))
     
     for url in candidates {
         if let content = try? String(contentsOf: url, encoding: .utf8), !content.isEmpty {

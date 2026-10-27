@@ -1,0 +1,10 @@
+version: "Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)"
+options: "d6a05e9915791106836cdf88e5ce754d1ca387bfd416032c6cd0a3ead428cab5"
+build_start_time: [1793124650, 918696000]
+build_end_time: [1793124666, 907573000]
+inputs:
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/FanController.swift": [1791042031, 90321422]
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/HTTPServer.swift": [1791042477, 454584479]
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/Models.swift": [1791043697, 824202535]
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCConnection.swift": [1791042465, 337064981]
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCReaderWriter.swift": [1791049567, 636278404]

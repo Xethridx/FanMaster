@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)"
+options: "7bc4a8089e054a118ac789ef2b334cfdfa3809a4e3e464a1a3a6a3c9a6a50a02"
+build_start_time: [1793124667, 86920000]
+build_end_time: [1793124754, 282946000]
+inputs:
+  "/Users/mac/Documents/FanMaster/Sources/FanMaster/AppDelegate.swift": !dirty [1793124260, 991877083]
+  "/Users/mac/Documents/FanMaster/Sources/FanMaster/HTML.swift": !dirty [1791044191, 31245834]
+  "/Users/mac/Documents/FanMaster/Sources/FanMaster/main.swift": !dirty [1793124202, 831498311]

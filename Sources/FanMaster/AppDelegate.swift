@@ -13,12 +13,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     var statusMenuItem: NSMenuItem!
     var fanMenuItem: NSMenuItem!
     var profileMenuItems: [String: NSMenuItem] = [:]
+    var autostartMenuItem: NSMenuItem?
+    var startMinimizedMenuItem: NSMenuItem?
     var updateTimer: Timer?
+    var currentTimerInterval: Double = 2.0
     
     init(monitor: SystemMonitor, config: AppConfig, isRoot: Bool) {
         self.monitor = monitor
         self.config = config
         self.isRoot = isRoot
+        self.currentTimerInterval = max(1.0, config.updateInterval)
         super.init()
     }
     
@@ -26,13 +30,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         setupStatusItem()
         setupMenu()
         
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { [weak self] _ in
+        currentTimerInterval = max(1.0, config.updateInterval)
+        updateTimer = Timer.scheduledTimer(withTimeInterval: currentTimerInterval, repeats: true) { [weak self] _ in
             self?.updateStatus()
         }
         updateStatus()
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            self?.openDashboard(nil)
+        // Minimize to menu bar on launch if requested (e.g. at login or configured)
+        let isMinimized = CommandLine.arguments.contains("--minimized") ||
+                          CommandLine.arguments.contains("-m") ||
+                          config.startMinimized
+        if !isMinimized {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.openDashboard(nil)
+            }
         }
     }
     
@@ -85,6 +96,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         
         menu.addItem(NSMenuItem.separator())
         
+        let autostartItem = NSMenuItem(title: "Iniciar con macOS", action: #selector(toggleAutostart(_:)), keyEquivalent: "")
+        autostartItem.target = self
+        autostartItem.state = config.launchAtLogin ? .on : .off
+        menu.addItem(autostartItem)
+        self.autostartMenuItem = autostartItem
+        
+        let startMinItem = NSMenuItem(title: "Iniciar Minimizado en Barra", action: #selector(toggleStartMinimized(_:)), keyEquivalent: "")
+        startMinItem.target = self
+        startMinItem.state = config.startMinimized ? .on : .off
+        menu.addItem(startMinItem)
+        self.startMinimizedMenuItem = startMinItem
+        
+        menu.addItem(NSMenuItem.separator())
+        
         let dashItem = NSMenuItem(title: "Abrir Panel de Control…", action: #selector(openDashboard(_:)), keyEquivalent: "o")
         dashItem.target = self
         menu.addItem(dashItem)
@@ -100,6 +125,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     
     @objc func updateStatus() {
         config = loadConfig()
+        
+        // Dynamically update timer interval if configuration changed
+        if abs(config.updateInterval - currentTimerInterval) > 0.1 && config.updateInterval >= 1.0 {
+            currentTimerInterval = config.updateInterval
+            updateTimer?.invalidate()
+            updateTimer = Timer.scheduledTimer(withTimeInterval: currentTimerInterval, repeats: true) { [weak self] _ in
+                self?.updateStatus()
+            }
+        }
+        
         let targetKey = config.menuBarSensorKey.isEmpty ? "TC0D" : config.menuBarSensorKey
         let primarySensor: TemperatureSensor?
         
@@ -122,21 +157,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let displayTemp = tempInt > 0 ? "\(tempInt)°C" : "--°C"
         let displayRPM = fanRPM > 0 ? "\(fanRPM) RPM" : "---- RPM"
         
+        let alertPrefix = (tempVal >= config.alertTempThreshold && tempVal > 0) ? "⚠️ " : ""
+        
         if config.menuBarDisplayMode == "tempOnly" {
-            statusItem.button?.title = displayTemp
+            statusItem.button?.title = "\(alertPrefix)\(displayTemp)"
         } else if config.menuBarDisplayMode == "rpmOnly" {
-            statusItem.button?.title = displayRPM
+            statusItem.button?.title = "\(alertPrefix)\(displayRPM)"
         } else {
-            statusItem.button?.title = "\(displayTemp)  \(displayRPM)"
+            statusItem.button?.title = "\(alertPrefix)\(displayTemp)  \(displayRPM)"
         }
         
         statusMenuItem.title = "\(primarySensor?.name ?? "CPU Die"): \(displayTemp)"
         fanMenuItem.title = "Ventilador: \(displayRPM)"
         
-        let activeId = monitor.controller.isRunning ? (monitor.controller.activeProfile?.id ?? "") : "apple"
+        let activeId: String
+        if isRoot {
+            activeId = monitor.controller.isRunning ? (monitor.controller.activeProfile?.id ?? "apple") : "apple"
+        } else {
+            activeId = config.activeProfileId.isEmpty ? "apple" : config.activeProfileId
+        }
+        
         for (id, item) in profileMenuItems {
             item.state = (id == activeId) ? .on : .off
         }
+        
+        autostartMenuItem?.state = config.launchAtLogin ? .on : .off
+        startMinimizedMenuItem?.state = config.startMinimized ? .on : .off
+        applyWindowAppearance()
+    }
+    
+    @objc func toggleAutostart(_ sender: NSMenuItem) {
+        config.launchAtLogin.toggle()
+        sender.state = config.launchAtLogin ? .on : .off
+        configureLaunchAtLogin(enabled: config.launchAtLogin, startMinimized: config.startMinimized)
+        saveConfig(config)
+    }
+    
+    @objc func toggleStartMinimized(_ sender: NSMenuItem) {
+        config.startMinimized.toggle()
+        sender.state = config.startMinimized ? .on : .off
+        configureLaunchAtLogin(enabled: config.launchAtLogin, startMinimized: config.startMinimized)
+        saveConfig(config)
     }
     
     @objc func profileSelected(_ sender: NSMenuItem) {
@@ -172,13 +233,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         NSApp.setActivationPolicy(.regular)
         
         if window == nil {
-            let rect = NSRect(x: 0, y: 0, width: 1100, height: 750)
+            let rect = NSRect(x: 0, y: 0, width: 620, height: 600)
             let win = NSWindow(
                 contentRect: rect,
                 styleMask: [.titled, .closable, .miniaturizable, .resizable],
                 backing: .buffered,
                 defer: false
             )
+            win.minSize = NSSize(width: 520, height: 480)
             win.title = "FanMaster — Control de Ventiladores y Temperatura"
             win.center()
             win.isReleasedWhenClosed = false
@@ -193,14 +255,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             win.contentView = web
             self.window = win
             self.webView = web
+            applyWindowAppearance()
         } else {
             if let url = URL(string: "http://localhost:\(self.config.port)") {
                 webView?.load(URLRequest(url: url))
             }
+            applyWindowAppearance()
         }
         
         window?.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    func applyWindowAppearance() {
+        guard let win = window else { return }
+        if config.appearanceMode == "dark" {
+            win.appearance = NSAppearance(named: .darkAqua)
+        } else if config.appearanceMode == "light" {
+            win.appearance = NSAppearance(named: .aqua)
+        } else {
+            win.appearance = nil
+        }
     }
     
     func windowShouldClose(_ sender: NSWindow) -> Bool {

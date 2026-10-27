@@ -11,12 +11,24 @@ struct AppConfig: Codable {
     var alertTempThreshold: Double
     var menuBarSensorKey: String = "TC0D"
     var menuBarDisplayMode: String = "tempAndRpm"
+    var launchAtLogin: Bool = true
+    var startMinimized: Bool = true
+    var appearanceMode: String = "system"
     
     enum CodingKeys: String, CodingKey {
-        case activeProfileId, profiles, updateInterval, port, alertTempThreshold, menuBarSensorKey, menuBarDisplayMode
+        case activeProfileId, profiles, updateInterval, port, alertTempThreshold, menuBarSensorKey, menuBarDisplayMode, launchAtLogin, startMinimized, appearanceMode
     }
     
-    init(activeProfileId: String = "balanced", profiles: [FanProfile] = [.silent, .balanced, .performance, .max], updateInterval: Double = 3.0, port: Int = 7474, alertTempThreshold: Double = 85.0, menuBarSensorKey: String = "TC0D", menuBarDisplayMode: String = "tempAndRpm") {
+    init(activeProfileId: String = "balanced",
+         profiles: [FanProfile] = [.silent, .balanced, .performance, .max],
+         updateInterval: Double = 3.0,
+         port: Int = 7474,
+         alertTempThreshold: Double = 85.0,
+         menuBarSensorKey: String = "TC0D",
+         menuBarDisplayMode: String = "tempAndRpm",
+         launchAtLogin: Bool = true,
+         startMinimized: Bool = true,
+         appearanceMode: String = "system") {
         self.activeProfileId = activeProfileId
         self.profiles = profiles
         self.updateInterval = updateInterval
@@ -24,6 +36,9 @@ struct AppConfig: Codable {
         self.alertTempThreshold = alertTempThreshold
         self.menuBarSensorKey = menuBarSensorKey
         self.menuBarDisplayMode = menuBarDisplayMode
+        self.launchAtLogin = launchAtLogin
+        self.startMinimized = startMinimized
+        self.appearanceMode = appearanceMode
     }
     
     init(from decoder: Decoder) throws {
@@ -35,6 +50,9 @@ struct AppConfig: Codable {
         alertTempThreshold = try container.decodeIfPresent(Double.self, forKey: .alertTempThreshold) ?? 85.0
         menuBarSensorKey = try container.decodeIfPresent(String.self, forKey: .menuBarSensorKey) ?? "TC0D"
         menuBarDisplayMode = try container.decodeIfPresent(String.self, forKey: .menuBarDisplayMode) ?? "tempAndRpm"
+        launchAtLogin = try container.decodeIfPresent(Bool.self, forKey: .launchAtLogin) ?? true
+        startMinimized = try container.decodeIfPresent(Bool.self, forKey: .startMinimized) ?? true
+        appearanceMode = try container.decodeIfPresent(String.self, forKey: .appearanceMode) ?? "system"
     }
     
     static var `default`: AppConfig {
@@ -42,12 +60,31 @@ struct AppConfig: Codable {
     }
 }
 
-func getConfigDir() -> URL {
+func getConsoleUserHome() -> URL {
+    var statBuf = stat()
+    if stat("/dev/console", &statBuf) == 0 {
+        if let pw = getpwuid(statBuf.st_uid), let home = pw.pointee.pw_dir {
+            let consoleHome = String(cString: home)
+            if !consoleHome.isEmpty && consoleHome != "/var/root" {
+                return URL(fileURLWithPath: consoleHome)
+            }
+        }
+    }
     if let pw = getpwuid(getuid()), let home = pw.pointee.pw_dir {
         let homeStr = String(cString: home)
-        return URL(fileURLWithPath: homeStr).appendingPathComponent(".config/fanmaster")
+        if !homeStr.isEmpty && homeStr != "/var/root" {
+            return URL(fileURLWithPath: homeStr)
+        }
     }
-    return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".config/fanmaster")
+    return FileManager.default.homeDirectoryForCurrentUser
+}
+
+func getConfigDir() -> URL {
+    let sharedDir = URL(fileURLWithPath: "/Library/Application Support/FanMaster")
+    if FileManager.default.fileExists(atPath: sharedDir.appendingPathComponent("config.json").path) {
+        return sharedDir
+    }
+    return getConsoleUserHome().appendingPathComponent(".config/fanmaster")
 }
 
 func loadConfig() -> AppConfig {
@@ -66,6 +103,49 @@ func saveConfig(_ config: AppConfig) {
     let path = dir.appendingPathComponent("config.json")
     if let data = try? JSONEncoder().encode(config) {
         try? data.write(to: path)
+        chmod(path.path, 0o666)
+        var statBuf = stat()
+        if stat("/dev/console", &statBuf) == 0 && getuid() == 0 {
+            chown(path.path, statBuf.st_uid, statBuf.st_gid)
+            chown(dir.path, statBuf.st_uid, statBuf.st_gid)
+        }
+    }
+}
+
+func configureLaunchAtLogin(enabled: Bool, startMinimized: Bool) {
+    let home = getConsoleUserHome()
+    let launchAgentDir = home.appendingPathComponent("Library/LaunchAgents")
+    let plistURL = launchAgentDir.appendingPathComponent("com.fanmaster.app.plist")
+    
+    if enabled {
+        try? FileManager.default.createDirectory(at: launchAgentDir, withIntermediateDirectories: true)
+        let minFlag = startMinimized ? "\n        <string>--minimized</string>" : ""
+        let plistContent = """
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>Label</key>
+            <string>com.fanmaster.app</string>
+            <key>ProgramArguments</key>
+            <array>
+                <string>/Applications/FanMaster.app/Contents/MacOS/FanMaster</string>\(minFlag)
+            </array>
+            <key>RunAtLoad</key>
+            <true/>
+            <key>ProcessType</key>
+            <string>Interactive</string>
+        </dict>
+        </plist>
+        """
+        try? plistContent.write(to: plistURL, atomically: true, encoding: .utf8)
+        chmod(plistURL.path, 0o644)
+        var statBuf = stat()
+        if stat("/dev/console", &statBuf) == 0 && getuid() == 0 {
+            chown(plistURL.path, statBuf.st_uid, statBuf.st_gid)
+        }
+    } else {
+        try? FileManager.default.removeItem(at: plistURL)
     }
 }
 
@@ -220,7 +300,10 @@ func main() {
                 "updateInterval": config.updateInterval,
                 "port": config.port,
                 "menuBarSensorKey": config.menuBarSensorKey,
-                "menuBarDisplayMode": config.menuBarDisplayMode
+                "menuBarDisplayMode": config.menuBarDisplayMode,
+                "launchAtLogin": config.launchAtLogin,
+                "startMinimized": config.startMinimized,
+                "appearanceMode": config.appearanceMode
             ]
             return (200, "application/json", jsonString(c))
             
@@ -245,6 +328,17 @@ func main() {
                     }
                     if k == "menuBarDisplayMode" {
                         config.menuBarDisplayMode = v
+                    }
+                    if k == "appearanceMode" {
+                        config.appearanceMode = v
+                    }
+                    if k == "launchAtLogin" {
+                        config.launchAtLogin = (v == "true" || v == "1")
+                        configureLaunchAtLogin(enabled: config.launchAtLogin, startMinimized: config.startMinimized)
+                    }
+                    if k == "startMinimized" {
+                        config.startMinimized = (v == "true" || v == "1")
+                        configureLaunchAtLogin(enabled: config.launchAtLogin, startMinimized: config.startMinimized)
                     }
                 }
             }

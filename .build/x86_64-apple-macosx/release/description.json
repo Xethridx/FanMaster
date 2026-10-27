@@ -1,0 +1,336 @@
+{
+  "builtTestProducts" : [
+
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.FanMaster-release.module" : {
+      "executable" : "/Users/mac/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "importPath" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMaster/AppDelegate.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMaster/HTML.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMaster/main.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.swiftmodule"
+        }
+      ],
+      "isLibrary" : false,
+      "moduleName" : "FanMaster",
+      "moduleOutputPath" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.swiftmodule",
+      "objects" : [
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/AppDelegate.swift.o",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/HTML.swift.o",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/main.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "x86_64-apple-macosx12.0",
+        "-swift-version",
+        "5",
+        "-O",
+        "-g",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-module-cache-path",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-Xfrontend",
+        "-entry-point-function-name",
+        "-Xfrontend",
+        "FanMaster_main",
+        "-sdk",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+        "-F",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC"
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/AppDelegate.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/HTML.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/main.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.swiftmodule"
+        }
+      ],
+      "sources" : [
+        "/Users/mac/Documents/FanMaster/Sources/FanMaster/AppDelegate.swift",
+        "/Users/mac/Documents/FanMaster/Sources/FanMaster/HTML.swift",
+        "/Users/mac/Documents/FanMaster/Sources/FanMaster/main.swift"
+      ],
+      "tempsPath" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build",
+      "wholeModuleOptimization" : true
+    },
+    "C.FanMasterCore-release.module" : {
+      "executable" : "/Users/mac/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "importPath" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/FanController.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/HTTPServer.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/Models.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCConnection.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCReaderWriter.swift"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "FanMasterCore",
+      "moduleOutputPath" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.swiftmodule",
+      "objects" : [
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanController.swift.o",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/HTTPServer.swift.o",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/Models.swift.o",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCConnection.swift.o",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCReaderWriter.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "x86_64-apple-macosx12.0",
+        "-swift-version",
+        "5",
+        "-O",
+        "-g",
+        "-j8",
+        "-DSWIFT_PACKAGE",
+        "-module-cache-path",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanMasterCore-Swift.h",
+        "-sdk",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+        "-F",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-I",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-fPIC"
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanController.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/HTTPServer.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/Models.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCConnection.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCReaderWriter.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.swiftmodule"
+        }
+      ],
+      "sources" : [
+        "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/FanController.swift",
+        "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/HTTPServer.swift",
+        "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/Models.swift",
+        "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCConnection.swift",
+        "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCReaderWriter.swift"
+      ],
+      "tempsPath" : "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build",
+      "wholeModuleOptimization" : true
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "FanMaster" : [
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "FanMaster",
+      "-whole-module-optimization",
+      "-num-threads",
+      "8",
+      "-c",
+      "/Users/mac/Documents/FanMaster/Sources/FanMaster/AppDelegate.swift",
+      "/Users/mac/Documents/FanMaster/Sources/FanMaster/HTML.swift",
+      "/Users/mac/Documents/FanMaster/Sources/FanMaster/main.swift",
+      "-I",
+      "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release",
+      "-target",
+      "x86_64-apple-macosx12.0",
+      "-swift-version",
+      "5",
+      "-O",
+      "-g",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-module-cache-path",
+      "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-Xfrontend",
+      "-entry-point-function-name",
+      "-Xfrontend",
+      "FanMaster_main",
+      "-sdk",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+      "-F",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-driver-use-frontend-path",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "FanMasterCore" : [
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "FanMasterCore",
+      "-whole-module-optimization",
+      "-num-threads",
+      "8",
+      "-c",
+      "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/FanController.swift",
+      "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/HTTPServer.swift",
+      "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/Models.swift",
+      "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCConnection.swift",
+      "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCReaderWriter.swift",
+      "-I",
+      "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release",
+      "-target",
+      "x86_64-apple-macosx12.0",
+      "-swift-version",
+      "5",
+      "-O",
+      "-g",
+      "-j8",
+      "-DSWIFT_PACKAGE",
+      "-module-cache-path",
+      "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanMasterCore-Swift.h",
+      "-sdk",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+      "-F",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-I",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-fPIC",
+      "-driver-use-frontend-path",
+      "/Users/mac/Downloads/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "FanMaster" : [
+      "FanMasterCore"
+    ],
+    "FanMasterCore" : [
+
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+
+  }
+}

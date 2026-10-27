@@ -1,0 +1,22 @@
+{
+  "": {
+    "dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/FanMaster.d",
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/FanMaster.o",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/master.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMaster/AppDelegate.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/AppDelegate.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/AppDelegate~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/AppDelegate.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMaster/HTML.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/HTML.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/HTML~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/HTML.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMaster/main.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/main.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/main~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMaster.build/main.swiftdeps"
+  }
+}

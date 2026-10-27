@@ -3,37 +3,136 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FanMaster — Mac mini</title>
+<title>FanMaster — Control de Ventiladores y Temperatura</title>
 <style>
 /* ============================================================
-   FanMaster — Apple HIG Minimalist Interface (Tabs & Settings)
-   macOS Dark Mode • Tabular Numerics • Zero Emojis
+   FanMaster — Apple Human Interface Guidelines (macOS Sonoma / Ventura)
+   Vibrancy • Frosted Glass • SF Typography • Tabular Numerics
    ============================================================ */
 
 :root {
-  --bg-window:      #16161a;
-  --bg-card:        rgba(30, 30, 36, 0.72);
-  --bg-card-hover:  rgba(38, 38, 46, 0.85);
-  --bg-control:     rgba(255, 255, 255, 0.06);
-  --bg-control-act: rgba(255, 255, 255, 0.16);
-  --border:         rgba(255, 255, 255, 0.08);
-  --border-focus:   #0a84ff;
+  /* System Dark Palette (Default) */
+  --bg-window:          #16161a;
+  --bg-gradient:        radial-gradient(circle at 50% 0%, #20202a 0%, #131317 75%, #0e0e12 100%);
+  --bg-card:            rgba(28, 28, 34, 0.65);
+  --bg-card-hover:      rgba(38, 38, 46, 0.85);
+  --bg-control:         rgba(255, 255, 255, 0.05);
+  --bg-control-hover:   rgba(255, 255, 255, 0.09);
+  --bg-control-active:  rgba(255, 255, 255, 0.16);
+  --border:             rgba(255, 255, 255, 0.08);
+  --border-focus:       #0a84ff;
+  --specular:           inset 0 1px 0 rgba(255, 255, 255, 0.09);
+
+  --header-bg:          rgba(22, 22, 26, 0.82);
+  --header-shadow:      0 4px 20px rgba(0, 0, 0, 0.25);
+  --nav-bg:             rgba(0, 0, 0, 0.25);
+  --nav-border:         rgba(255, 255, 255, 0.08);
+  --nav-active-bg:      rgba(255, 255, 255, 0.14);
+  --nav-active-color:   #ffffff;
+  --nav-hover-bg:       rgba(255, 255, 255, 0.04);
+  --seg-bg:             rgba(0, 0, 0, 0.28);
+  --select-bg:          rgba(255, 255, 255, 0.07);
+  --select-border:      rgba(255, 255, 255, 0.12);
+  --select-option-bg:   #212128;
+  --select-option-color:#ffffff;
+  --canvas-bg:          rgba(0, 0, 0, 0.22);
+  --canvas-border:      rgba(255, 255, 255, 0.05);
+  --table-th-bg:        rgba(0, 0, 0, 0.25);
+  --table-border-subtle:rgba(255, 255, 255, 0.04);
+  --table-hover-bg:     rgba(255, 255, 255, 0.035);
+  --stat-bg:            rgba(255, 255, 255, 0.03);
+  --stat-border:        rgba(255, 255, 255, 0.06);
+  --toast-bg:           rgba(30, 30, 36, 0.94);
+  --slider-bg:          rgba(255, 255, 255, 0.16);
+  --slider-knob-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
   
-  --system-blue:    #0a84ff;
-  --system-teal:    #64d2ff;
-  --system-green:   #30d158;
-  --system-orange:  #ff9f0a;
-  --system-red:     #ff453a;
+  /* Apple System Colors */
+  --system-blue:        #0a84ff;
+  --system-blue-glow:   rgba(10, 132, 255, 0.25);
+  --system-teal:        #64d2ff;
+  --system-green:       #30d158;
+  --system-green-glow:  rgba(48, 209, 88, 0.25);
+  --system-orange:      #ff9f0a;
+  --system-orange-glow: rgba(255, 159, 10, 0.25);
+  --system-red:         #ff453a;
+  --system-red-glow:    rgba(255, 69, 58, 0.25);
+  --system-purple:      #bf5af2;
   
-  --text-primary:   rgba(255, 255, 255, 0.94);
-  --text-secondary: rgba(255, 255, 255, 0.60);
-  --text-tertiary:  rgba(255, 255, 255, 0.36);
+  /* Text & Hierarchy */
+  --text-primary:       rgba(255, 255, 255, 0.94);
+  --text-secondary:     rgba(255, 255, 255, 0.65);
+  --text-tertiary:      rgba(255, 255, 255, 0.40);
+  --text-quaternary:    rgba(255, 255, 255, 0.22);
   
-  --radius-sm:      6px;
-  --radius-md:      10px;
-  --radius-lg:      14px;
-  --font-system:    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", system-ui, sans-serif;
-  --transition:     0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Geometry & Physics */
+  --radius-xs:          5px;
+  --radius-sm:          7px;
+  --radius-md:          11px;
+  --radius-lg:          16px;
+  --radius-full:        9999px;
+  --font-system:        -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --transition-fast:    0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth:  0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-card:        0 8px 32px rgba(0, 0, 0, 0.36);
+  --shadow-popover:     0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] {
+  /* Apple HIG macOS Light Palette */
+  --bg-window:          #ececf0;
+  --bg-gradient:        radial-gradient(circle at 50% 0%, #ffffff 0%, #f2f2f6 75%, #e5e5ea 100%);
+  --bg-card:            rgba(255, 255, 255, 0.76);
+  --bg-card-hover:      rgba(255, 255, 255, 0.92);
+  --bg-control:         rgba(0, 0, 0, 0.04);
+  --bg-control-hover:   rgba(0, 0, 0, 0.07);
+  --bg-control-active:  rgba(0, 0, 0, 0.12);
+  --border:             rgba(0, 0, 0, 0.09);
+  --border-focus:       #007aff;
+  --specular:           inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  --header-bg:          rgba(244, 244, 247, 0.86);
+  --header-shadow:      0 2px 12px rgba(0, 0, 0, 0.05);
+  --nav-bg:             rgba(0, 0, 0, 0.06);
+  --nav-border:         rgba(0, 0, 0, 0.08);
+  --nav-active-bg:      #ffffff;
+  --nav-active-color:   #1d1d1f;
+  --nav-hover-bg:       rgba(0, 0, 0, 0.03);
+  --seg-bg:             rgba(0, 0, 0, 0.06);
+  --select-bg:          rgba(255, 255, 255, 0.9);
+  --select-border:      rgba(0, 0, 0, 0.14);
+  --select-option-bg:   #ffffff;
+  --select-option-color:#1d1d1f;
+  --canvas-bg:          rgba(0, 0, 0, 0.02);
+  --canvas-border:      rgba(0, 0, 0, 0.08);
+  --table-th-bg:        rgba(0, 0, 0, 0.035);
+  --table-border-subtle:rgba(0, 0, 0, 0.05);
+  --table-hover-bg:     rgba(0, 0, 0, 0.025);
+  --stat-bg:            rgba(0, 0, 0, 0.025);
+  --stat-border:        rgba(0, 0, 0, 0.06);
+  --toast-bg:           rgba(255, 255, 255, 0.96);
+  --slider-bg:          rgba(0, 0, 0, 0.15);
+  --slider-knob-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+
+  /* Apple System Colors for Light */
+  --system-blue:        #007aff;
+  --system-blue-glow:   rgba(0, 122, 255, 0.25);
+  --system-teal:        #30b0c7;
+  --system-green:       #28cd41;
+  --system-green-glow:  rgba(40, 205, 65, 0.25);
+  --system-orange:      #ff9500;
+  --system-orange-glow: rgba(255, 149, 0, 0.25);
+  --system-red:         #ff3b30;
+  --system-red-glow:    rgba(255, 59, 48, 0.25);
+  --system-purple:      #af52de;
+
+  /* Text & Hierarchy */
+  --text-primary:       #1d1d1f;
+  --text-secondary:     rgba(60, 60, 67, 0.82);
+  --text-tertiary:      rgba(60, 60, 67, 0.52);
+  --text-quaternary:    rgba(60, 60, 67, 0.26);
+  
+  --shadow-card:        0 4px 18px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-popover:     0 12px 36px rgba(0, 0, 0, 0.12);
 }
 
 *, *::before, *::after {
@@ -41,38 +140,45 @@
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   font-family: var(--font-system);
-  background-color: var(--bg-window);
+  background: var(--bg-window);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100vh;
   line-height: 1.45;
   user-select: none;
+  -webkit-user-select: none;
   overflow-x: hidden;
+  transition: background var(--transition-smooth), color var(--transition-smooth);
 }
 
 .num, .tabular {
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
 }
 
 /* ============================================================
-   WINDOW HEADER & TOOLBAR
+   WINDOW HEADER & TOOLBAR (macOS HIG Glassmorphism)
    ============================================================ */
 header {
   position: sticky;
   top: 0;
   z-index: 50;
-  padding: 12px 24px;
+  padding: 8px 16px 10px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  background: rgba(22, 22, 26, 0.90);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
+  gap: 8px;
+  background: var(--header-bg);
+  backdrop-filter: blur(40px) saturate(190%);
+  -webkit-backdrop-filter: blur(40px) saturate(190%);
   border-bottom: 1px solid var(--border);
+  box-shadow: var(--header-shadow);
+  transition: background var(--transition-smooth), border-color var(--transition-smooth);
 }
 
 .header-top {
@@ -84,57 +190,85 @@ header {
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 9px;
+}
+
+.brand-icon-wrap {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, rgba(10, 132, 255, 0.25), rgba(94, 92, 230, 0.35));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(10, 132, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .brand-icon {
-  width: 26px;
-  height: 26px;
-  color: var(--system-blue);
-  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.4));
 }
 
 .brand-info h1 {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-info h1 .version-badge {
+  font-size: 9px;
+  font-weight: 500;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--bg-control);
+  color: var(--text-tertiary);
+  letter-spacing: 0;
 }
 
 .brand-info span {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-tertiary);
   font-weight: 400;
+  display: block;
 }
 
 .toolbar-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .pill-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 3px 9px;
-  border-radius: 100px;
-  font-size: 11px;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
   font-weight: 500;
   background: var(--bg-control);
   border: 1px solid var(--border);
   color: var(--text-secondary);
+  transition: all var(--transition-fast);
 }
 
 .pill-badge.active {
   background: rgba(48, 209, 88, 0.12);
   border-color: rgba(48, 209, 88, 0.28);
   color: var(--system-green);
+  box-shadow: 0 0 10px rgba(48, 209, 88, 0.12);
 }
 
 .status-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: currentColor;
 }
@@ -144,15 +278,18 @@ header {
 }
 
 @keyframes dotPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
+  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 4px currentColor); }
+  50% { opacity: 0.35; transform: scale(0.85); filter: none; }
 }
 
 .clock-text {
-  font-size: 12px;
+  font-size: 10.5px;
   color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
-  margin-inline-start: 4px;
+  margin-inline-start: 2px;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-control);
 }
 
 /* ============================================================
@@ -166,44 +303,47 @@ header {
 
 .tab-nav {
   display: inline-flex;
-  background: var(--bg-control);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 3px;
-  gap: 4px;
+  background: var(--nav-bg);
+  border: 1px solid var(--nav-border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .tab-btn {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 6px 14px;
+  gap: 5px;
+  padding: 4px 12px;
   border: none;
   background: transparent;
   color: var(--text-secondary);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all var(--transition-fast);
 }
 
 .tab-btn svg {
-  width: 14px;
-  height: 14px;
-  opacity: 0.8;
+  width: 12.5px;
+  height: 12.5px;
+  opacity: 0.75;
+  transition: transform var(--transition-fast), color var(--transition-fast);
 }
 
 .tab-btn:hover {
   color: var(--text-primary);
+  background: var(--nav-hover-bg);
 }
 
 .tab-btn.active {
-  background: var(--bg-control-act);
-  color: var(--text-primary);
+  background: var(--nav-active-bg);
+  color: var(--nav-active-color);
   font-weight: 600;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12), var(--specular);
 }
 
 .tab-btn.active svg {
@@ -215,16 +355,16 @@ header {
    MAIN CONTENT & TAB PAGES
    ============================================================ */
 main {
-  max-width: 1100px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 20px 24px;
+  padding: 10px 14px 18px;
 }
 
 .tab-content {
   display: none;
   flex-direction: column;
-  gap: 16px;
-  animation: fadeIn 0.18s ease-out;
+  gap: 10px;
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tab-content.active {
@@ -236,22 +376,23 @@ main {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Cards */
+/* Apple Inset Grouped Cards */
 .card {
   background: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
+  border-radius: var(--radius-md);
+  padding: 11px 13px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transition: border-color var(--transition);
+  gap: 9px;
+  box-shadow: var(--shadow-card), var(--specular);
+  transition: border-color var(--transition-smooth), transform var(--transition-smooth);
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--border);
 }
 
 .card-header {
@@ -263,8 +404,8 @@ main {
 .card-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 10.5px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -272,33 +413,41 @@ main {
 }
 
 .card-title svg {
-  width: 14px;
-  height: 14px;
-  color: var(--text-tertiary);
+  width: 13px;
+  height: 13px;
+  color: var(--system-blue);
+  opacity: 0.9;
 }
 
 .card-badge {
-  font-size: 11px;
-  color: var(--text-tertiary);
+  font-size: 10px;
+  color: var(--text-secondary);
   font-weight: 500;
+  background: var(--bg-control);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
 }
 
 .grid-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 10px;
 }
 
-@media (max-width: 780px) {
+@media (max-width: 480px) {
   .grid-columns { grid-template-columns: 1fr; }
 }
 
-/* Fan Card */
+/* ============================================================
+   HERO METRICS (FAN & CORE TEMPERATURE)
+   ============================================================ */
 .fan-display {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 8px;
+  padding: 2px 2px;
 }
 
 .fan-metrics {
@@ -307,39 +456,42 @@ main {
 }
 
 .fan-rpm-large {
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
   color: var(--text-primary);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
 }
 
 .fan-rpm-unit {
-  font-size: 12px;
+  font-size: 9.5px;
   font-weight: 500;
   color: var(--text-tertiary);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .fan-icon-wrap {
-  width: 64px;
-  height: 64px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--bg-control);
-  border: 1px solid var(--border);
+  background: radial-gradient(circle, rgba(10, 132, 255, 0.15) 0%, rgba(255, 255, 255, 0.03) 70%);
+  border: 1px solid rgba(10, 132, 255, 0.25);
+  box-shadow: 0 0 14px rgba(10, 132, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .fan-svg {
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px;
   color: var(--system-blue);
   transform-origin: center center;
   animation: fanSpin 2.5s linear infinite;
+  filter: drop-shadow(0 0 4px rgba(10, 132, 255, 0.4));
 }
 
 @keyframes fanSpin {
@@ -350,35 +502,39 @@ main {
 .progress-track {
   width: 100%;
   height: 5px;
-  background: var(--bg-control);
-  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
   overflow: hidden;
   position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--system-blue);
-  border-radius: 100px;
+  background: linear-gradient(90deg, var(--system-blue), var(--system-teal));
+  border-radius: var(--radius-full);
   transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 8px var(--system-blue-glow);
 }
 
 .scale-limits {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-tertiary);
   font-variant-numeric: tabular-nums;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
+/* Apple Segmented Control */
 .segmented-control {
   display: flex;
-  background: var(--bg-control);
+  background: var(--seg-bg);
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 3px;
+  border-radius: var(--radius-sm);
+  padding: 2px;
   gap: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .segment-btn {
@@ -387,61 +543,65 @@ main {
   background: transparent;
   color: var(--text-secondary);
   font-family: inherit;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
+  padding: 5px 3px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all var(--transition-fast);
   text-align: center;
 }
 
 .segment-btn:hover {
   color: var(--text-primary);
+  background: var(--nav-hover-bg);
 }
 
 .segment-btn.active {
-  background: var(--bg-control-act);
-  color: var(--text-primary);
+  background: var(--nav-active-bg);
+  color: var(--nav-active-color);
   font-weight: 600;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.12), var(--specular);
 }
 
-/* CPU Card */
+/* CPU / Core Temperature */
 .temp-display {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 4px 8px;
+  padding: 2px 2px;
 }
 
 .temp-large {
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
   color: var(--system-green);
-  transition: color 0.4s ease;
+  text-shadow: 0 1px 10px rgba(48, 209, 88, 0.25);
+  transition: color 0.4s ease, text-shadow 0.4s ease;
 }
 
 .temp-unit {
-  font-size: 12px;
+  font-size: 9.5px;
   font-weight: 500;
   color: var(--text-tertiary);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .thermal-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 100px;
-  font-size: 11px;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  font-size: 10px;
   font-weight: 500;
   background: var(--bg-control);
   border: 1px solid var(--border);
+  transition: all var(--transition-smooth);
 }
 
 .thermal-badge.normal {
@@ -451,102 +611,119 @@ main {
 }
 
 .thermal-badge.moderate {
-  background: rgba(255, 214, 10, 0.12);
-  border-color: rgba(255, 214, 10, 0.28);
+  background: rgba(255, 159, 10, 0.14);
+  border-color: rgba(255, 159, 10, 0.32);
   color: var(--system-orange);
 }
 
 .thermal-badge.critical {
-  background: rgba(255, 69, 58, 0.14);
-  border-color: rgba(255, 69, 58, 0.32);
+  background: rgba(255, 69, 58, 0.16);
+  border-color: rgba(255, 69, 58, 0.35);
   color: var(--system-red);
+  box-shadow: 0 0 12px var(--system-red-glow);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
+  gap: 5px;
 }
 
 .stat-box {
-  background: var(--bg-control);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
+  background: var(--stat-bg);
+  border: 1px solid var(--stat-border);
+  border-radius: var(--radius-xs);
+  padding: 4px 6px;
   display: flex;
   flex-direction: column;
 }
 
 .stat-box .label {
-  font-size: 10px;
+  font-size: 8.5px;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   color: var(--text-tertiary);
 }
 
 .stat-box .val {
-  font-size: 15px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--text-primary);
   margin-top: 2px;
   font-variant-numeric: tabular-nums;
 }
 
-/* Profiles row */
+/* ============================================================
+   THERMAL CURVE PROFILES & CANVAS
+   ============================================================ */
 .profiles-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 7px;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 480px) {
   .profiles-row { grid-template-columns: 1fr 1fr; }
 }
 
 .profile-card {
-  background: var(--bg-control);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
+  background: var(--stat-bg);
+  border: 1px solid var(--stat-border);
+  border-radius: var(--radius-sm);
+  padding: 7px 9px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all var(--transition-smooth);
 }
 
 .profile-card:hover {
-  background: var(--bg-control-act);
-  border-color: rgba(255, 255, 255, 0.16);
+  background: var(--bg-card-hover);
+  border-color: var(--border);
+  transform: translateY(-1px);
 }
 
 .profile-card.active {
   background: rgba(10, 132, 255, 0.12);
   border-color: var(--system-blue);
+  box-shadow: 0 0 12px var(--system-blue-glow), var(--specular);
 }
 
 .profile-card .p-name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .profile-card.active .p-name {
   color: var(--system-blue);
 }
 
-.profile-card .p-desc {
+.profile-card.active .p-name::after {
+  content: "✓";
   font-size: 10px;
-  color: var(--text-tertiary);
-  line-height: 1.3;
+  color: var(--system-blue);
 }
 
-/* Curve Visualizer */
+.profile-card .p-desc {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  line-height: 1.25;
+}
+
 .curve-canvas-wrap {
   width: 100%;
-  height: 140px;
+  height: 120px;
   position: relative;
-  margin-top: 4px;
+  margin-top: 3px;
+  background: var(--canvas-bg);
+  border: 1px solid var(--canvas-border);
+  border-radius: var(--radius-sm);
+  padding: 6px;
 }
 
 canvas#curveCanvas {
@@ -556,56 +733,89 @@ canvas#curveCanvas {
 }
 
 /* ============================================================
-   TAB 2: HARDWARE SENSORS DIRECTORY
+   TAB 2: SENSORS DIRECTORY (macOS System Profiler Look)
    ============================================================ */
+.sensors-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
 .sensors-table {
   width: 100%;
   border-collapse: collapse;
+  text-align: left;
 }
 
 .sensors-table th {
-  text-align: left;
-  font-size: 11px;
+  font-size: 9.5px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-tertiary);
-  padding: 8px 12px;
+  padding: 6px 10px;
+  background: var(--table-th-bg);
   border-bottom: 1px solid var(--border);
 }
 
 .sensors-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  font-size: 13px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--table-border-subtle);
+  font-size: 11.5px;
   color: var(--text-primary);
+  transition: background var(--transition-fast);
+}
+
+.sensors-table tr:last-child td {
+  border-bottom: none;
 }
 
 .sensors-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--table-hover-bg);
+}
+
+.sensor-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sensor-cat-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  font-size: 10px;
 }
 
 .sensor-key-tag {
-  font-family: Menlo, Monaco, monospace;
+  font-family: ui-monospace, Menlo, Monaco, monospace;
   font-size: 10px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--bg-control);
-  color: var(--text-tertiary);
+  font-weight: 500;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
 }
 
 .sensor-bar-wrap {
   width: 100%;
-  max-width: 160px;
+  max-width: 120px;
   height: 4px;
-  background: var(--bg-control);
-  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
 .sensor-bar-fill {
   height: 100%;
-  border-radius: 100px;
+  border-radius: var(--radius-full);
   transition: width 0.4s ease;
 }
 
@@ -613,47 +823,54 @@ canvas#curveCanvas {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   display: inline-block;
-  min-width: 58px;
+  min-width: 46px;
   text-align: right;
+  font-size: 12px;
 }
 
 /* ============================================================
-   TAB 3: SETTINGS MENU
+   TAB 3: SETTINGS (macOS System Settings Grouped Style)
    ============================================================ */
 .settings-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
 .setting-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--table-border-subtle);
+  gap: 12px;
+}
+
+.setting-row:first-child {
+  padding-top: 1px;
 }
 
 .setting-row:last-child {
   border-bottom: none;
+  padding-bottom: 1px;
 }
 
 .setting-meta {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  max-width: 60%;
+  max-width: 65%;
 }
 
 .setting-title {
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 500;
   color: var(--text-primary);
 }
 
 .setting-desc {
-  font-size: 11px;
+  font-size: 9.5px;
   color: var(--text-tertiary);
+  line-height: 1.3;
 }
 
 .setting-control {
@@ -662,48 +879,151 @@ canvas#curveCanvas {
   gap: 8px;
 }
 
+/* Modern Apple HIG Styled Select */
+.setting-select-wrap {
+  position: relative;
+  display: inline-block;
+}
+
 .setting-select {
-  background: var(--bg-control);
-  border: 1px solid var(--border);
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--select-bg);
+  border: 1px solid var(--select-border);
   color: var(--text-primary);
   font-family: inherit;
-  font-size: 12px;
-  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 26px 4px 9px;
   border-radius: var(--radius-sm);
   outline: none;
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), var(--specular);
+  transition: all var(--transition-fast);
+}
+
+.setting-select:hover {
+  background-color: var(--bg-control-hover);
+  border-color: var(--border-focus);
+}
+
+.setting-select:focus {
+  border-color: var(--system-blue);
+  box-shadow: 0 0 0 3px var(--system-blue-glow);
 }
 
 .setting-select option {
-  background: #1a1a20;
-  color: #fff;
+  background-color: var(--select-option-bg);
+  color: var(--select-option-color);
+  padding: 6px;
 }
 
+/* SF Chevron Indicator */
+.setting-select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 10px;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 12' fill='%23999999'%3E%3Cpath d='M4 0L0 4h8L4 0zM4 12l4-4H0l4 4z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.7;
+}
+
+/* Apple Slider */
 .range-wrap {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .range-input {
   accent-color: var(--system-blue);
   cursor: pointer;
+  height: 5px;
+  border-radius: var(--radius-full);
 }
 
-.save-pill-btn {
-  background: var(--system-blue);
-  color: #fff;
-  border: none;
-  padding: 6px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  font-weight: 600;
+/* Apple iOS/macOS Toggle Switch */
+.ios-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.ios-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--slider-bg);
+  border: 1px solid var(--border);
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 22px;
 }
 
-.save-pill-btn:hover {
-  opacity: 0.85;
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 2px;
+  bottom: 1px;
+  background-color: #fff;
+  transition: all 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 50%;
+  box-shadow: var(--slider-knob-shadow);
+}
+
+input:checked + .slider {
+  background-color: var(--system-green);
+  border-color: var(--system-green);
+  box-shadow: 0 0 10px var(--system-green-glow);
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+}
+
+/* Toast alert notification */
+#toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--toast-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-popover);
+  border-radius: var(--radius-md);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  transform: translateY(60px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 100;
+}
+
+#toast-notification.show {
+  transform: translateY(0);
+  opacity: 1;
 }
 </style>
 </head>
@@ -713,17 +1033,19 @@ canvas#curveCanvas {
 <header>
   <div class="header-top">
     <div class="brand">
-      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="9"/>
-        <path d="M12 12c-2.5-2.5-1.5-6.5 0-7 1.5 0.5 2.5 4.5 0 7z"/>
-        <path d="M12 12c2.5-2.5 6.5-1.5 7 0-0.5 1.5-4.5 2.5-7 0z"/>
-        <path d="M12 12c2.5 2.5 1.5 6.5 0 7-1.5-0.5-2.5-4.5 0-7z"/>
-        <path d="M12 12c-2.5 2.5-6.5 1.5-7 0 0.5-1.5 4.5-2.5 7 0z"/>
-        <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-      </svg>
+      <div class="brand-icon-wrap">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 12c-2.5-2.5-1.5-6.5 0-7 1.5 0.5 2.5 4.5 0 7z"/>
+          <path d="M12 12c2.5-2.5 6.5-1.5 7 0-0.5 1.5-4.5 2.5-7 0z"/>
+          <path d="M12 12c2.5 2.5 1.5 6.5 0 7-1.5-0.5-2.5-4.5 0-7z"/>
+          <path d="M12 12c-2.5 2.5-6.5 1.5-7 0 0.5-1.5 4.5-2.5 7 0z"/>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+        </svg>
+      </div>
       <div class="brand-info">
-        <h1>FanMaster</h1>
-        <span>Mac mini (Late 2012) • AppleSMC</span>
+        <h1>FanMaster <span class="version-badge">AppleSMC</span></h1>
+        <span>Mac mini (Late 2012) • Intel Core Ivy Bridge</span>
       </div>
     </div>
 
@@ -737,7 +1059,12 @@ canvas#curveCanvas {
         <span id="root-text">Control Activo</span>
       </div>
 
-      <span id="clock-display" class="clock-text">--:--:--</span>
+      <button id="theme-toggle-btn" class="pill-badge" style="cursor:pointer;border:1px solid var(--border);" onclick="cycleTheme()" title="Cambiar Apariencia (Auto / Claro / Oscuro)">
+        <span id="theme-icon">◐</span>
+        <span id="theme-btn-label">Auto</span>
+      </button>
+
+      <span id="clock-display" class="clock-text num">--:--:--</span>
     </div>
   </div>
 
@@ -745,14 +1072,14 @@ canvas#curveCanvas {
   <div class="tab-bar-container">
     <nav class="tab-nav">
       <button class="tab-btn active" onclick="switchTab('control')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
           <circle cx="12" cy="12" r="3"/>
         </svg>
         Control y Curvas
       </button>
       <button class="tab-btn" onclick="switchTab('sensors')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="4" width="16" height="16" rx="2"/>
           <rect x="9" y="9" width="6" height="6"/>
           <line x1="9" y1="1" x2="9" y2="4"/>
@@ -764,10 +1091,10 @@ canvas#curveCanvas {
           <line x1="1" y1="9" x2="4" y2="9"/>
           <line x1="1" y1="15" x2="4" y2="15"/>
         </svg>
-        Sensores (<span id="tab-sensor-count">9</span>)
+        Sensores (<span id="tab-sensor-count" class="num">8</span>)
       </button>
       <button class="tab-btn" onclick="switchTab('settings')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"/>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
         </svg>
@@ -788,7 +1115,7 @@ canvas#curveCanvas {
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
@@ -818,9 +1145,9 @@ canvas#curveCanvas {
           <div class="progress-track">
             <div id="fan-progress-fill" class="progress-fill" style="width: 0%;"></div>
           </div>
-          <div class="scale-limits">
+          <div class="scale-limits num">
             <span id="fan-min-lbl">1,800 RPM (Mín)</span>
-            <span id="fan-pct-lbl" style="color:var(--text-secondary)">--%</span>
+            <span id="fan-pct-lbl" style="color:var(--text-secondary);font-weight:600">--%</span>
             <span id="fan-max-lbl">5,500 RPM (Máx)</span>
           </div>
         </div>
@@ -837,7 +1164,7 @@ canvas#curveCanvas {
       <div class="card">
         <div class="card-header">
           <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
               <circle cx="11.5" cy="17.5" r="2" fill="currentColor"/>
             </svg>
@@ -852,28 +1179,28 @@ canvas#curveCanvas {
             <div class="temp-unit" id="primary-sensor-subtitle">Celsius • Núcleo Térmico</div>
           </div>
 
-          <div class="stat-box" style="min-width: 100px;">
+          <div class="stat-box" style="min-width: 105px;">
             <span class="label">Carga CPU</span>
-            <span id="cpu-usage-val" class="val">--%</span>
+            <span id="cpu-usage-val" class="val num">--%</span>
           </div>
         </div>
 
         <div class="progress-track">
-          <div id="cpu-usage-bar" class="progress-fill" style="width: 0%; background: var(--system-teal);"></div>
+          <div id="cpu-usage-bar" class="progress-fill" style="width: 0%; background: linear-gradient(90deg, var(--system-teal), var(--system-blue));"></div>
         </div>
 
         <div class="stats-grid">
           <div class="stat-box">
             <span class="label">Mínima</span>
-            <span id="stat-min" class="val">--.-°C</span>
+            <span id="stat-min" class="val num">--.-°C</span>
           </div>
           <div class="stat-box">
             <span class="label">Promedio</span>
-            <span id="stat-avg" class="val">--.-°C</span>
+            <span id="stat-avg" class="val num">--.-°C</span>
           </div>
           <div class="stat-box">
             <span class="label">Máxima</span>
-            <span id="stat-max" class="val">--.-°C</span>
+            <span id="stat-max" class="val num">--.-°C</span>
           </div>
         </div>
       </div>
@@ -883,7 +1210,7 @@ canvas#curveCanvas {
     <div class="card">
       <div class="card-header">
         <div class="card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="4" y1="21" x2="4" y2="14"/>
             <line x1="4" y1="10" x2="4" y2="3"/>
             <line x1="12" y1="21" x2="12" y2="12"/>
@@ -896,7 +1223,7 @@ canvas#curveCanvas {
           </svg>
           Perfiles de Curva Térmica
         </div>
-        <div class="card-badge" id="active-profile-label">Perfil: Equilibrado</div>
+        <div class="card-badge" id="active-profile-label">Perfil: Balanceado</div>
       </div>
 
       <div class="profiles-row" id="profiles-container">
@@ -915,7 +1242,7 @@ canvas#curveCanvas {
     <div class="card">
       <div class="card-header">
         <div class="card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="4" y="4" width="16" height="16" rx="2"/>
             <rect x="9" y="9" width="6" height="6"/>
             <line x1="9" y1="1" x2="9" y2="4"/>
@@ -929,22 +1256,24 @@ canvas#curveCanvas {
           </svg>
           Directorio Completo de Sensores SMC
         </div>
-        <div class="card-badge" id="sensors-count-badge">-- Sensores</div>
+        <div class="card-badge num" id="sensors-count-badge">-- Sensores</div>
       </div>
 
-      <table class="sensors-table">
-        <thead>
-          <tr>
-            <th>Componente</th>
-            <th>Clave SMC</th>
-            <th>Nivel Térmico</th>
-            <th style="text-align:right">Temperatura</th>
-          </tr>
-        </thead>
-        <tbody id="sensors-table-body">
-          <!-- Dynamically populated -->
-        </tbody>
-      </table>
+      <div class="sensors-table-wrap">
+        <table class="sensors-table">
+          <thead>
+            <tr>
+              <th>Componente / Sensor</th>
+              <th>Clave SMC</th>
+              <th>Rango Visual</th>
+              <th style="text-align:right">Temperatura</th>
+            </tr>
+          </thead>
+          <tbody id="sensors-table-body">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -953,7 +1282,7 @@ canvas#curveCanvas {
     <div class="card">
       <div class="card-header">
         <div class="card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"/>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
@@ -963,22 +1292,43 @@ canvas#curveCanvas {
 
       <div class="settings-group">
 
+        <!-- Theme & Appearance Selector -->
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Apariencia y Tema</span>
+            <span class="setting-desc">Elige entre modo claro, modo oscuro o sincronizado automáticamente con la apariencia del sistema macOS.</span>
+          </div>
+          <div class="setting-control">
+            <div class="setting-select-wrap">
+              <select id="cfg-theme-select" class="setting-select" onchange="saveSetting('appearanceMode', this.value)">
+                <option value="system">Automático (Mismo que el sistema)</option>
+                <option value="dark">Modo Oscuro</option>
+                <option value="light">Modo Claro</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <!-- Sensor Selector for Menu Bar -->
         <div class="setting-row">
           <div class="setting-meta">
             <span class="setting-title">Sensor en la Barra de Menús</span>
-            <span class="setting-desc">Elige qué sensor térmico se muestra en la barra superior de macOS (resuelve el valor estático de sensores no conectados).</span>
+            <span class="setting-desc">Selecciona la sonda de temperatura que alimentará la lectura visible en la barra de menús de macOS.</span>
           </div>
           <div class="setting-control">
-            <select id="cfg-sensor-select" class="setting-select" onchange="saveSetting('menuBarSensorKey', this.value)">
-              <option value="TC0D">CPU Die (TC0D) — Predeterminado</option>
-              <option value="TC0P">CPU Proximity (TC0P)</option>
-              <option value="TC0E">CPU Die 2 (TC0E)</option>
-              <option value="TC0F">CPU Die 3 (TC0F)</option>
-              <option value="TPCD">PCH Die (TPCD)</option>
-              <option value="TW0P">Airport Proximity (TW0P)</option>
-              <option value="MAX">Sensor más caliente (Dinámico)</option>
-            </select>
+            <div class="setting-select-wrap">
+              <select id="cfg-sensor-select" class="setting-select" onchange="saveSetting('menuBarSensorKey', this.value)">
+                <option value="TC0D">CPU Die (TC0D) — Predeterminado</option>
+                <option value="TC0P">CPU Proximity (TC0P)</option>
+                <option value="TC0E">CPU Die 2 (TC0E)</option>
+                <option value="TC0F">CPU Die 3 (TC0F)</option>
+                <option value="TPCD">PCH Die (TPCD)</option>
+                <option value="TP0P">PCH Proximity (TP0P)</option>
+                <option value="TW0P">Airport Proximity (TW0P)</option>
+                <option value="TM0P">Memory Bank A (TM0P)</option>
+                <option value="MAX">Sensor más caliente (Dinámico)</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -986,14 +1336,16 @@ canvas#curveCanvas {
         <div class="setting-row">
           <div class="setting-meta">
             <span class="setting-title">Formato de Texto en Barra Superior</span>
-            <span class="setting-desc">Personaliza el formato visible junto al reloj de macOS.</span>
+            <span class="setting-desc">Personaliza el diseño de los datos numéricos junto a la hora de macOS.</span>
           </div>
           <div class="setting-control">
-            <select id="cfg-mode-select" class="setting-select" onchange="saveSetting('menuBarDisplayMode', this.value)">
-              <option value="tempAndRpm">Temperatura y RPM (64°C  4,700 RPM)</option>
-              <option value="tempOnly">Solo Temperatura (64°C)</option>
-              <option value="rpmOnly">Solo RPM (4,700 RPM)</option>
-            </select>
+            <div class="setting-select-wrap">
+              <select id="cfg-mode-select" class="setting-select" onchange="saveSetting('menuBarDisplayMode', this.value)">
+                <option value="tempAndRpm">Temperatura y RPM (64°C  4,700 RPM)</option>
+                <option value="tempOnly">Solo Temperatura (64°C)</option>
+                <option value="rpmOnly">Solo RPM (4,700 RPM)</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -1001,15 +1353,17 @@ canvas#curveCanvas {
         <div class="setting-row">
           <div class="setting-meta">
             <span class="setting-title">Frecuencia de Actualización</span>
-            <span class="setting-desc">Intervalo de lectura del chip SMC y refresco de interfaz.</span>
+            <span class="setting-desc">Intervalo de lectura del coprocesador AppleSMC y refresco de pantalla.</span>
           </div>
           <div class="setting-control">
-            <select id="cfg-interval-select" class="setting-select" onchange="saveSetting('interval', this.value)">
-              <option value="1">1 segundo</option>
-              <option value="2" selected>2 segundos (Recomendado)</option>
-              <option value="3">3 segundos</option>
-              <option value="5">5 segundos</option>
-            </select>
+            <div class="setting-select-wrap">
+              <select id="cfg-interval-select" class="setting-select" onchange="saveSetting('interval', this.value)">
+                <option value="1">1 segundo (Alta reactividad)</option>
+                <option value="2" selected>2 segundos (Equilibrado)</option>
+                <option value="3">3 segundos (Bajo impacto)</option>
+                <option value="5">5 segundos (Ahorro)</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -1017,11 +1371,39 @@ canvas#curveCanvas {
         <div class="setting-row">
           <div class="setting-meta">
             <span class="setting-title">Umbral de Alerta Térmica</span>
-            <span class="setting-desc">Temperatura a partir de la cual se notifica aviso de sobrecalentamiento.</span>
+            <span class="setting-desc">Temperatura límite a partir de la cual se activan avisos visuales de sobrecalentamiento.</span>
           </div>
           <div class="setting-control range-wrap">
             <input type="range" id="cfg-threshold-range" class="range-input" min="70" max="95" value="85" oninput="document.getElementById('threshold-val').textContent = this.value + '°C'" onchange="saveSetting('alertThreshold', this.value)">
-            <span id="threshold-val" class="num" style="font-size:13px;font-weight:600;min-width:40px">85°C</span>
+            <span id="threshold-val" class="num" style="font-size:13px;font-weight:600;min-width:44px;color:var(--system-orange)">85°C</span>
+          </div>
+        </div>
+
+        <!-- Launch at Login -->
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Iniciar con el Sistema (Auto-inicio)</span>
+            <span class="setting-desc">Lanza FanMaster de manera automática al arrancar o iniciar sesión en tu Mac.</span>
+          </div>
+          <div class="setting-control">
+            <label class="ios-switch">
+              <input type="checkbox" id="cfg-autostart-toggle" onchange="saveSetting('launchAtLogin', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Start Minimized -->
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Iniciar Minimizado en Barra Superior</span>
+            <span class="setting-desc">Mantiene la app en segundo plano en la barra superior sin desplegar la ventana principal en el arranque.</span>
+          </div>
+          <div class="setting-control">
+            <label class="ios-switch">
+              <input type="checkbox" id="cfg-minimized-toggle" onchange="saveSetting('startMinimized', this.checked)">
+              <span class="slider"></span>
+            </label>
           </div>
         </div>
 
@@ -1032,7 +1414,7 @@ canvas#curveCanvas {
     <div class="card">
       <div class="card-header">
         <div class="card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
             <line x1="8" y1="21" x2="16" y2="21"/>
             <line x1="12" y1="17" x2="12" y2="21"/>
@@ -1045,7 +1427,7 @@ canvas#curveCanvas {
         <div class="setting-row">
           <div class="setting-meta">
             <span class="setting-title">Servicio en Segundo Plano (LaunchDaemon)</span>
-            <span class="setting-desc">Permite a FanMaster proteger y regular los ventiladores incluso con el Mac bloqueado.</span>
+            <span class="setting-desc">Permite a FanMaster proteger y regular las curvas de ventilación incluso con la pantalla bloqueada o sin sesión abierta.</span>
           </div>
           <div class="setting-control">
             <span class="pill-badge active">
@@ -1061,7 +1443,7 @@ canvas#curveCanvas {
             <span class="setting-desc">Mac mini (Late 2012) • Arquitectura Intel Core Ivy Bridge con AppleSMC de doble canal.</span>
           </div>
           <div class="setting-control">
-            <span style="font-size:12px;color:var(--text-tertiary)">Macmini6,1 / 6,2</span>
+            <span class="sensor-key-tag">Macmini6,1 / 6,2</span>
           </div>
         </div>
       </div>
@@ -1069,6 +1451,13 @@ canvas#curveCanvas {
   </div>
 
 </main>
+
+<div id="toast-notification">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--system-green)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+  <span id="toast-text">Configuración aplicada</span>
+</div>
 
 <script>
 /* ============================================================
@@ -1089,14 +1478,27 @@ let config = {
   menuBarSensorKey: 'TC0D',
   menuBarDisplayMode: 'tempAndRpm',
   updateInterval: 2,
-  alertTempThreshold: 85
+  alertTempThreshold: 85,
+  launchAtLogin: true,
+  startMinimized: true
 };
 
 let profilesData = [];
 let currentTab = 'control';
+let statusPollInterval = null;
 
 const curveCanvas = document.getElementById('curveCanvas');
 const ctx = curveCanvas ? curveCanvas.getContext('2d') : null;
+
+function showToast(message) {
+  const toast = document.getElementById('toast-notification');
+  const text = document.getElementById('toast-text');
+  if (toast && text) {
+    text.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+}
 
 // Tab switcher
 function switchTab(tabId) {
@@ -1121,6 +1523,13 @@ function tickClock() {
 setInterval(tickClock, 1000);
 tickClock();
 
+// Polling manager
+function setupPolling() {
+  if (statusPollInterval) clearInterval(statusPollInterval);
+  const intervalMs = Math.max(1000, Math.round((config.updateInterval || 2) * 1000));
+  statusPollInterval = setInterval(refreshStatus, intervalMs);
+}
+
 // Fetch status from API
 async function refreshStatus() {
   try {
@@ -1140,19 +1549,80 @@ async function loadConfig() {
     if (res.ok) {
       config = await res.json();
       applyConfigToUI();
+      setupPolling();
     }
   } catch (_) {}
+}
+
+let currentThemeMode = (function() {
+  try { return localStorage.getItem('fanmaster_theme') || 'system'; } catch(_) { return 'system'; }
+})();
+
+function applyTheme(mode) {
+  if (mode) {
+    currentThemeMode = mode;
+    try { localStorage.setItem('fanmaster_theme', mode); } catch(_) {}
+  }
+  const isDarkSystem = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  let effective = 'dark';
+  if (currentThemeMode === 'light') {
+    effective = 'light';
+  } else if (currentThemeMode === 'dark') {
+    effective = 'dark';
+  } else {
+    effective = isDarkSystem ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-theme', effective);
+
+  const icon = document.getElementById('theme-icon');
+  const label = document.getElementById('theme-btn-label');
+  if (icon && label) {
+    if (currentThemeMode === 'system') {
+      icon.innerHTML = '◐';
+      label.textContent = 'Auto';
+    } else if (currentThemeMode === 'light') {
+      icon.innerHTML = '☀';
+      label.textContent = 'Claro';
+    } else {
+      icon.innerHTML = '☾';
+      label.textContent = 'Oscuro';
+    }
+  }
+
+  const sTheme = document.getElementById('cfg-theme-select');
+  if (sTheme && sTheme.value !== currentThemeMode) {
+    sTheme.value = currentThemeMode;
+  }
+
+  if (typeof drawCurve === 'function' && currentTab === 'control') {
+    drawCurve();
+  }
+}
+
+function cycleTheme() {
+  const modes = ['system', 'light', 'dark'];
+  const next = modes[(modes.indexOf(currentThemeMode) + 1) % modes.length];
+  saveSetting('appearanceMode', next);
+  applyTheme(next);
 }
 
 async function saveSetting(key, val) {
   try {
     await fetch(`/api/config?${key}=${encodeURIComponent(val)}`, { method: 'POST' });
     config[key] = val;
+    if (key === 'appearanceMode') {
+      applyTheme(val);
+    }
+    showToast('Ajuste actualizado correctamente');
     loadConfig();
   } catch (_) {}
 }
 
 function applyConfigToUI() {
+  const sTheme = document.getElementById('cfg-theme-select');
+  if (sTheme && config.appearanceMode) sTheme.value = config.appearanceMode;
+  applyTheme(config.appearanceMode || 'system');
+
   const sSensor = document.getElementById('cfg-sensor-select');
   if (sSensor && config.menuBarSensorKey) sSensor.value = config.menuBarSensorKey;
 
@@ -1168,6 +1638,12 @@ function applyConfigToUI() {
     sThresh.value = config.alertTempThreshold;
     if (tVal) tVal.textContent = config.alertTempThreshold + '°C';
   }
+
+  const sAuto = document.getElementById('cfg-autostart-toggle');
+  if (sAuto) sAuto.checked = config.launchAtLogin !== false;
+
+  const sMin = document.getElementById('cfg-minimized-toggle');
+  if (sMin) sMin.checked = config.startMinimized !== false;
 }
 
 async function refreshProfiles() {
@@ -1211,8 +1687,8 @@ function renderFanMetrics() {
 
   document.getElementById('fan-rpm-val').textContent = rpm.toLocaleString('es-ES');
   document.getElementById('fan-target-badge').textContent = `Objetivo: ${target.toLocaleString('es-ES')} RPM`;
-  document.getElementById('fan-min-lbl').textContent = `${min.toLocaleString('es-ES')} RPM`;
-  document.getElementById('fan-max-lbl').textContent = `${max.toLocaleString('es-ES')} RPM`;
+  document.getElementById('fan-min-lbl').textContent = `${min.toLocaleString('es-ES')} RPM (Mín)`;
+  document.getElementById('fan-max-lbl').textContent = `${max.toLocaleString('es-ES')} RPM (Máx)`;
 
   const pct = Math.max(0, Math.min(100, ((rpm - min) / (max - min)) * 100));
   document.getElementById('fan-progress-fill').style.width = pct.toFixed(1) + '%';
@@ -1232,7 +1708,6 @@ function renderFanMetrics() {
 }
 
 function renderCPUMetrics() {
-  // Use selected primary sensor (default: TC0D CPU Die)
   const targetKey = config.menuBarSensorKey || 'TC0D';
   let cpuSensor;
   if (targetKey === 'MAX') {
@@ -1249,15 +1724,16 @@ function renderCPUMetrics() {
   const headerLabel = document.getElementById('primary-sensor-header');
   if (headerLabel) headerLabel.textContent = `Sensor Principal — ${cpuSensor.name}`;
 
+  const threshold = config.alertTempThreshold || state.alertThreshold || 85;
   let color = 'var(--system-green)';
   let statusText = 'Temperatura Óptima';
   let badgeClass = 'thermal-badge normal';
 
-  if (temp >= 90) {
+  if (temp >= threshold) {
     color = 'var(--system-red)';
-    statusText = 'Temperatura Crítica';
+    statusText = 'Temperatura Crítica (Alerta)';
     badgeClass = 'thermal-badge critical';
-  } else if (temp >= 80) {
+  } else if (temp >= threshold - 12) {
     color = 'var(--system-orange)';
     statusText = 'Temperatura Elevada';
     badgeClass = 'thermal-badge moderate';
@@ -1299,11 +1775,11 @@ function renderProfiles() {
     card.className = 'profile-card' + (isActive ? ' active' : '');
     card.onclick = () => applyProfile(p.id);
 
-    let desc = 'Regulación térmica automática.';
-    if (p.id === 'balanced') desc = 'Equilibrio acústico y térmico eficiente.';
-    else if (p.id === 'silent') desc = 'Prioriza acústica relajando el ventilador.';
-    else if (p.id === 'performance') desc = 'Enfriamiento reactivo ante cargas elevadas.';
-    else if (p.id === 'max') desc = 'Régimen máximo (5,500 RPM) continuo.';
+    let desc = 'Regulación térmica inteligente.';
+    if (p.id === 'balanced') desc = 'Equilibrio acústico y térmico estándar.';
+    else if (p.id === 'silent') desc = 'Prioriza acústica relajando el flujo de aire.';
+    else if (p.id === 'performance') desc = 'Disipación anticipada para cargas de trabajo.';
+    else if (p.id === 'max') desc = 'Régimen continuo a 5,500 RPM para máxima ventilación.';
 
     card.innerHTML = `
       <div class="p-name">${p.name}</div>
@@ -1315,7 +1791,7 @@ function renderProfiles() {
   const activeLabel = document.getElementById('active-profile-label');
   const activeObj = profilesData.find(p => p.id === state.activeProfile);
   if (activeLabel) {
-    activeLabel.textContent = `Perfil: ${activeObj ? activeObj.name : 'Equilibrado'}`;
+    activeLabel.textContent = `Perfil: ${activeObj ? activeObj.name : 'Balanceado'}`;
   }
 }
 
@@ -1324,6 +1800,7 @@ async function applyProfile(profileId) {
     const res = await fetch(`/api/profile/apply?id=${profileId}`, { method: 'POST' });
     if (res.ok) {
       state.activeProfile = profileId;
+      showToast('Perfil de ventilador activado');
       renderProfiles();
       renderFanMetrics();
       drawCurve();
@@ -1336,6 +1813,7 @@ async function setMode(mode) {
     try {
       await fetch('/api/control/auto', { method: 'POST' });
       state.activeProfile = 'apple';
+      showToast('Control automático restablecido a Apple');
       renderAll();
     } catch (_) {}
   } else if (mode === 'curve') {
@@ -1365,11 +1843,19 @@ function renderSensorsTable() {
     else if (temp >= 70) barColor = 'var(--system-orange)';
     else if (temp >= 55) barColor = 'var(--system-teal)';
 
+    let catIcon = "CPU";
+    if (sensor.key.startsWith("TP")) catIcon = "PCH";
+    else if (sensor.key.startsWith("TM")) catIcon = "RAM";
+    else if (sensor.key.startsWith("TW")) catIcon = "AIR";
+
     const pct = Math.max(0, Math.min(100, temp));
 
     tr.innerHTML = `
       <td>
-        <div style="font-weight:500">${sensor.name}</div>
+        <div class="sensor-name-cell">
+          <span class="sensor-cat-icon">${catIcon}</span>
+          <span style="font-weight:500">${sensor.name}</span>
+        </div>
       </td>
       <td>
         <span class="sensor-key-tag">${sensor.key}</span>
@@ -1380,14 +1866,14 @@ function renderSensorsTable() {
         </div>
       </td>
       <td style="text-align:right">
-        <span class="temp-tag" style="color:${barColor}">${temp.toFixed(1)}°C</span>
+        <span class="temp-tag num" style="color:${barColor}">${temp.toFixed(1)}°C</span>
       </td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-// Curve Canvas
+// Curve Canvas - Retina Crisp Bezier Spline
 function drawCurve() {
   if (!ctx || !curveCanvas) return;
   const dpr = window.devicePixelRatio || 1;
@@ -1405,11 +1891,14 @@ function drawCurve() {
 
   ctx.clearRect(0, 0, w, h);
 
-  const padL = 36, padR = 20, padT = 12, padB = 22;
+  const padL = 36, padR = 16, padT = 10, padB = 20;
   const graphW = w - padL - padR;
   const graphH = h - padT - padB;
 
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
+  // Horizontal Grid Lines
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.06)';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
     const y = padT + (graphH / 4) * i;
@@ -1419,8 +1908,8 @@ function drawCurve() {
     ctx.stroke();
 
     const rpmVal = Math.round(5500 - (3700 / 4) * i);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-    ctx.font = '9px -apple-system, sans-serif';
+    ctx.fillStyle = isLight ? 'rgba(0, 0, 0, 0.45)' : 'rgba(255, 255, 255, 0.35)';
+    ctx.font = '8.5px -apple-system, sans-serif';
     ctx.textAlign = 'right';
     ctx.fillText(rpmVal, padL - 6, y + 3);
   }
@@ -1437,54 +1926,77 @@ function drawCurve() {
   const points = activeObj.curvePoints || [];
   if (points.length < 2) { ctx.restore(); return; }
 
-  const minTemp = 35, maxTemp = 100;
-  const minRPM = 1800, maxRPM = 5500;
+  const minT = 30, maxT = 95;
+  const minR = 1800, maxR = 5500;
 
-  function toX(t) { return padL + ((t - minTemp) / (maxTemp - minTemp)) * graphW; }
-  function toY(r) { return padT + graphH - ((r - minRPM) / (maxRPM - minRPM)) * graphH; }
-
-  ctx.beginPath();
-  ctx.moveTo(toX(points[0].temperature), toY(points[0].fanSpeed));
-  for (let i = 1; i < points.length; i++) {
-    ctx.lineTo(toX(points[i].temperature), toY(points[i].fanSpeed));
+  function toX(t) {
+    return padL + ((t - minT) / (maxT - minT)) * graphW;
   }
-  ctx.lineTo(toX(points[points.length - 1].temperature), padT + graphH);
-  ctx.lineTo(toX(points[0].temperature), padT + graphH);
-  ctx.closePath();
+  function toY(r) {
+    return padT + graphH - ((r - minR) / (maxR - minR)) * graphH;
+  }
 
-  const areaGrad = ctx.createLinearGradient(0, padT, 0, padT + graphH);
-  areaGrad.addColorStop(0, 'rgba(10, 132, 255, 0.22)');
-  areaGrad.addColorStop(1, 'rgba(10, 132, 255, 0.0)');
-  ctx.fillStyle = areaGrad;
-  ctx.fill();
-
+  // Draw Spline Curve
   ctx.beginPath();
-  ctx.moveTo(toX(points[0].temperature), toY(points[0].fanSpeed));
-  for (let i = 1; i < points.length; i++) {
-    ctx.lineTo(toX(points[i].temperature), toY(points[i].fanSpeed));
+  const sortedPoints = [...points].sort((a,b) => a.temperature - b.temperature);
+  
+  ctx.moveTo(toX(sortedPoints[0].temperature), toY(sortedPoints[0].fanSpeed));
+  for (let i = 0; i < sortedPoints.length - 1; i++) {
+    const p0 = sortedPoints[i];
+    const p1 = sortedPoints[i + 1];
+    const cpX = (toX(p0.temperature) + toX(p1.temperature)) / 2;
+    ctx.bezierCurveTo(cpX, toY(p0.fanSpeed), cpX, toY(p1.fanSpeed), toX(p1.temperature), toY(p1.fanSpeed));
+  }
+
+  // Gradient Area Fill
+  const gradient = ctx.createLinearGradient(0, padT, 0, padT + graphH);
+  gradient.addColorStop(0, isLight ? 'rgba(0, 122, 255, 0.20)' : 'rgba(10, 132, 255, 0.28)');
+  gradient.addColorStop(1, isLight ? 'rgba(0, 122, 255, 0.0)' : 'rgba(10, 132, 255, 0.0)');
+
+  ctx.save();
+  ctx.lineTo(toX(sortedPoints[sortedPoints.length - 1].temperature), padT + graphH);
+  ctx.lineTo(toX(sortedPoints[0].temperature), padT + graphH);
+  ctx.closePath();
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.restore();
+
+  // Stroke Curve
+  ctx.beginPath();
+  ctx.moveTo(toX(sortedPoints[0].temperature), toY(sortedPoints[0].fanSpeed));
+  for (let i = 0; i < sortedPoints.length - 1; i++) {
+    const p0 = sortedPoints[i];
+    const p1 = sortedPoints[i + 1];
+    const cpX = (toX(p0.temperature) + toX(p1.temperature)) / 2;
+    ctx.bezierCurveTo(cpX, toY(p0.fanSpeed), cpX, toY(p1.fanSpeed), toX(p1.temperature), toY(p1.fanSpeed));
   }
   ctx.strokeStyle = '#0a84ff';
   ctx.lineWidth = 2.2;
+  ctx.shadowColor = isLight ? 'rgba(0, 122, 255, 0.35)' : 'rgba(10, 132, 255, 0.5)';
+  ctx.shadowBlur = 6;
   ctx.stroke();
+  ctx.shadowBlur = 0;
 
-  points.forEach(pt => {
+  // Draw Control Points
+  sortedPoints.forEach(pt => {
     const px = toX(pt.temperature);
     const py = toY(pt.fanSpeed);
+
     ctx.beginPath();
     ctx.arc(px, py, 3.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#16161a';
+    ctx.fillStyle = isLight ? '#ffffff' : '#16161a';
     ctx.fill();
     ctx.strokeStyle = '#0a84ff';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.8;
     ctx.stroke();
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.font = '9px -apple-system, sans-serif';
+    ctx.fillStyle = isLight ? 'rgba(0, 0, 0, 0.55)' : 'rgba(255, 255, 255, 0.45)';
+    ctx.font = '8.5px -apple-system, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(`${pt.temperature}°C`, px, padT + graphH + 13);
   });
 
-  // Current Operating Point (Live Dot)
+  // Current Operating Point (Live Animated Glowing Dot)
   const targetKey = config.menuBarSensorKey || 'TC0D';
   const cpuSensor = state.temperatures.find(s => s.key === targetKey) || state.temperatures.find(s => s.key === 'TC0D') || state.temperatures[0];
   const curFan = state.fans[0];
@@ -1492,23 +2004,34 @@ function drawCurve() {
     const curX = Math.max(padL, Math.min(w - padR, toX(cpuSensor.temp)));
     const curY = Math.max(padT, Math.min(padT + graphH, toY(curFan.currentRPM)));
 
+    // Outer Aura
     ctx.beginPath();
-    ctx.arc(curX, curY, 7, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(48, 209, 88, 0.25)';
+    ctx.arc(curX, curY, 9, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(48, 209, 88, 0.22)';
     ctx.fill();
 
+    // Inner Core
     ctx.beginPath();
-    ctx.arc(curX, curY, 3.5, 0, Math.PI * 2);
+    ctx.arc(curX, curY, 4, 0, Math.PI * 2);
     ctx.fillStyle = '#30d158';
+    ctx.shadowColor = '#30d158';
+    ctx.shadowBlur = 6;
     ctx.fill();
+    ctx.shadowBlur = 0;
   }
 
   ctx.restore();
 }
 
 window.addEventListener('resize', drawCurve);
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (currentThemeMode === 'system') {
+    applyTheme('system');
+  }
+});
+applyTheme(currentThemeMode);
 loadConfig().then(() => refreshProfiles().then(refreshStatus));
-setInterval(refreshStatus, 2000);
+setupPolling();
 </script>
 </body>
 </html>

@@ -135,10 +135,36 @@ cp "$BUILD_DIR/FanMaster" "$HOME/.local/bin/fanmaster"
 cp "$BUILD_DIR/FanMaster" "$CLI_TARGET" 2>/dev/null || sudo cp "$BUILD_DIR/FanMaster" "$CLI_TARGET"
 chmod 755 "$CLI_TARGET" 2>/dev/null || true
 
+# 6. Configurar auto-inicio minimizado en la barra de menús (LaunchAgent)
+echo "🚀 Configurando auto-inicio minimizado en la barra superior…"
+mkdir -p "$HOME/Library/LaunchAgents"
+cat << 'AGENT_PLIST' > "$HOME/Library/LaunchAgents/com.fanmaster.app.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.fanmaster.app</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/FanMaster.app/Contents/MacOS/FanMaster</string>
+        <string>--minimized</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>ProcessType</key>
+    <string>Interactive</string>
+</dict>
+</plist>
+AGENT_PLIST
+chmod 644 "$HOME/Library/LaunchAgents/com.fanmaster.app.plist"
+
 echo ""
 echo "╔═══════════════════════════════════════════════════════════╗"
 echo "║  🎉 ¡INSTALACIÓN COMPLETADA!                              ║"
 echo "╚═══════════════════════════════════════════════════════════╝"
+echo ""
+echo "✅ Auto-inicio minimizado configurado en ~/Library/LaunchAgents/com.fanmaster.app.plist"
 echo ""
 echo "🚀 Para activar el control automático de ventilador permanente con Root:"
 echo ""

@@ -1,0 +1,4 @@
+module FanMasterCore {
+    header "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanMasterCore-Swift.h"
+    requires objc
+}

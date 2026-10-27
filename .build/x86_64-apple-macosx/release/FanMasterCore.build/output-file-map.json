@@ -1,0 +1,32 @@
+{
+  "": {
+    "dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanMasterCore.d",
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanMasterCore.o",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/master.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/FanController.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanController.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanController~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/FanController.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/HTTPServer.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/HTTPServer.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/HTTPServer~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/HTTPServer.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/Models.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/Models.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/Models~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/Models.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCConnection.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCConnection.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCConnection~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCConnection.swiftdeps"
+  },
+  "/Users/mac/Documents/FanMaster/Sources/FanMasterCore/SMCReaderWriter.swift": {
+    "object": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCReaderWriter.swift.o",
+    "swiftmodule": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCReaderWriter~partial.swiftmodule",
+    "swift-dependencies": "/Users/mac/Documents/FanMaster/.build/x86_64-apple-macosx/release/FanMasterCore.build/SMCReaderWriter.swiftdeps"
+  }
+}

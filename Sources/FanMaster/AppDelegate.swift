@@ -272,10 +272,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             win.delegate = self
             
             let config = WKWebViewConfiguration()
+            config.preferences.setValue(true, forKey: "developerExtrasEnabled")
             let web = WKWebView(frame: win.contentView!.bounds, configuration: config)
             web.autoresizingMask = [.width, .height]
             if let url = URL(string: "http://localhost:\(self.config.port)") {
-                web.load(URLRequest(url: url))
+                web.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10))
             }
             win.contentView = web
             self.window = win
@@ -283,7 +284,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             applyWindowAppearance()
         } else {
             if let url = URL(string: "http://localhost:\(self.config.port)") {
-                webView?.load(URLRequest(url: url))
+                webView?.load(URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10))
             }
             applyWindowAppearance()
         }

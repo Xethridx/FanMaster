@@ -1,0 +1,146 @@
+name: Build & Release FanMaster
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build Universal 2 Application
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        run: |
+          sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+          swift --version
+
+      - name: Compile Universal 2 Binary (x86_64 + arm64)
+        run: |
+          mkdir -p .build
+          SDK_PATH="$(xcrun --sdk macosx --show-sdk-path)"
+          echo "Using SDK: $SDK_PATH"
+          
+          SOURCES=(
+            "Sources/FanMasterCore/SMCConnection.swift"
+            "Sources/FanMasterCore/Models.swift"
+            "Sources/FanMasterCore/SystemInfo.swift"
+            "Sources/FanMasterCore/HIDThermalReader.swift"
+            "Sources/FanMasterCore/SMCReaderWriter.swift"
+            "Sources/FanMasterCore/FanController.swift"
+            "Sources/FanMasterCore/HTTPServer.swift"
+            "Sources/FanMaster/HTML.swift"
+            "Sources/FanMaster/AppDelegate.swift"
+            "Sources/FanMaster/main.swift"
+          )
+          
+          FRAMEWORKS=(
+            -framework IOKit
+            -framework Foundation
+            -framework AppKit
+            -framework WebKit
+          )
+          
+          echo "Compiling x86_64 slice..."
+          swiftc -sdk "$SDK_PATH" -target x86_64-apple-macos12.0 -O "${FRAMEWORKS[@]}" "${SOURCES[@]}" -o .build/FanMaster-x86_64
+          
+          echo "Compiling arm64 slice..."
+          swiftc -sdk "$SDK_PATH" -target arm64-apple-macos12.0 -O "${FRAMEWORKS[@]}" "${SOURCES[@]}" -o .build/FanMaster-arm64
+          
+          echo "Creating fat Mach-O binary with lipo..."
+          lipo -create .build/FanMaster-x86_64 .build/FanMaster-arm64 -output .build/FanMaster
+          
+          echo "Verifying binary architectures:"
+          lipo -info .build/FanMaster
+
+      - name: Package FanMaster.app Bundle
+        run: |
+          APP="FanMaster.app"
+          mkdir -p "$APP/Contents/MacOS"
+          mkdir -p "$APP/Contents/Resources"
+          
+          cp .build/FanMaster "$APP/Contents/MacOS/FanMaster"
+          chmod 755 "$APP/Contents/MacOS/FanMaster"
+          
+          cp Sources/FanMaster/index.html "$APP/Contents/Resources/index.html"
+          cp Sources/FanMaster/index.html "$APP/Contents/MacOS/index.html"
+          
+          if [ -f "Resources/AppIcon.icns" ]; then
+            cp "Resources/AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"
+          fi
+          
+          echo -n "APPL????" > "$APP/Contents/PkgInfo"
+          
+          cat << 'PLIST' > "$APP/Contents/Info.plist"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>FanMaster</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.fanmaster.FanMaster</string>
+              <key>CFBundleName</key>
+              <string>FanMaster</string>
+              <key>CFBundleDisplayName</key>
+              <string>FanMaster</string>
+              <key>CFBundleIconFile</key>
+              <string>AppIcon</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0.0</string>
+              <key>CFBundleVersion</key>
+              <string>1</string>
+              <key>LSMinimumSystemVersion</key>
+              <string>12.0</string>
+              <key>NSHighResolutionCapable</key>
+              <true/>
+              <key>NSPrincipalClass</key>
+              <string>NSApplication</string>
+              <key>NSAppTransportSecurity</key>
+              <dict>
+                  <key>NSAllowsLocalNetworking</key>
+                  <true/>
+                  <key>NSAllowsArbitraryLoads</key>
+                  <true/>
+              </dict>
+          </dict>
+          </plist>
+          PLIST
+          
+          codesign --force --deep --sign - "$APP"
+          zip -r -y "FanMaster-Universal.zip" "$APP"
+
+      - name: Build Distributable DMG
+        run: |
+          mkdir -p .dmg_staging
+          cp -R "FanMaster.app" ".dmg_staging/"
+          ln -s /Applications ".dmg_staging/Applications"
+          hdiutil create -volname "FanMaster" -srcfolder ".dmg_staging" -ov -format UDZO "FanMaster-Universal.dmg"
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: FanMaster-Universal-Artifacts
+          path: |
+            FanMaster-Universal.dmg
+            FanMaster-Universal.zip
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            FanMaster-Universal.dmg
+            FanMaster-Universal.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+

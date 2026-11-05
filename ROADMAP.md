@@ -109,56 +109,70 @@ Sprint 5: Robustez, Hardening y Pruebas en Hardware Real
 
 ---
 
-### 🏃 Sprint 3: Motor Térmico Extendido (Intel + Apple Silicon)
+### 🏃 Sprint 3: Motor Térmico Extendido (Intel + Apple Silicon) (✅ COMPLETADO)
 **Objetivo:** Permitir la lectura de sensores de temperatura en cualquier familia de procesadores Mac.
 
-* **Tarea 3.1 — Catálogo Extendido de Claves SMC para Intel:**
-  - Extender `knownTemperatureKeys` con las ~80 claves estándar de la comunidad:
-    - CPU Cores: `TC0C`, `TC1C`, `TC2C`, `TC3C`...
-    - GPU Integrada y Dedicada: `TG0D`, `TG0P`, `TCGC`...
-    - Ambient, Batería, Memoria y Heatsink: `TB0T`, `TM0S`, `Th1H`, etc.
-* **Tarea 3.2 — Detección y Lectura Térmica en Apple Silicon (`IOHIDEventSystemClient`):**
-  - En procesadores M1/M2/M3/M4, las temperaturas no residen en las claves tradicionales de AppleSMC.
-  - Implementar proveedor térmico complementario utilizando `IOHIDEventSystemClient` (matching de página de uso `kHIDPage_AppleVendorTemperatureSensor`), permitiendo leer los clústeres de núcleos de Eficiencia (E-Cores) y Rendimiento (P-Cores).
-* **Tarea 3.3 — Selección Inteligente de Sensor Principal:**
-  - Si el sensor configurado por defecto (`TC0D`) no existe en el equipo, seleccionar automáticamente:
-    1. El sensor de CPU Die / Core principal disponible.
-    2. O dinámicamente el sensor más caliente de la máquina (`MAX`).
-  - Evitar lecturas en blanco o errores `--°C`.
+* **Tarea 3.1 — Catálogo Extendido de Claves SMC para Intel (✅):**
+  - Se extendió `knownTemperatureKeys` con más de 75 claves estándar de la comunidad:
+    - Cores y Dies de CPU: `TC0D`, `TC0E`, `TC0F`, `TC0P`, `TC0H`, `TC0C`..`TC9C`, `TCAD`..`TCDD`, `TCPC`, `TCSA`, `TCTD`, etc.
+    - Gráficos integrados y dedicados: `TG0D`, `TG1D`, `TG0P`, `TG1P`, `TG0H`, `TG1H`, `TCGC`, `TGDD`, `TGVP`, `TG0M`, `TG1M`.
+    - Chipset, PCH y Thunderbolt: `TP0P`, `TPCD`, `TP0D`, `TI0P`..`TI3P`, `TN0D`, `TN0P`, `Ts0P`, `Ts0S`.
+    - Memoria RAM: `TM0P`..`TM3P`, `TM0S`..`TM7S`, `TMA1`..`TMB2`.
+    - Chasis, Batería y Disipadores: `TA0P`, `TA1P`, `TW0P`, `TB0T`..`TB3T`, `TL0P`, `Tm0P`, `Th1H`..`Th3H`, `THSP`, `Tp0C`, `Te0t`.
+* **Tarea 3.2 — Detección y Lectura Térmica en Apple Silicon (`IOHIDEventSystemClient`) (✅):**
+  - Implementado `Sources/FanMasterCore/HIDThermalReader.swift` utilizando carga dinámica con `dlsym` contra `IOKit.framework`.
+  - Mapeo automático de `kHIDPage_AppleVendor` (`0xff00`) y `kHIDUsage_AppleVendor_TemperatureSensor` (`0x0005`) para leer núcleos P-Cores, E-Cores, GPU, ANE, SoC y PMU.
+  - Formateador humano para nombres amigables de sensores de silicio de Apple.
+* **Tarea 3.3 — Selección Inteligente de Sensor Principal (✅):**
+  - Soporte para modo `"MAX"` (sensor dinámico más caliente).
+  - Algoritmo de fallback multinivel en `SMCReader`:
+    1. Coincidencia directa por clave configurada.
+    2. Fallbacks de CPU estándar (`TC0D`, `TC0P`, `TC0E`, `TC0C`, `TCAD`, `TC0H`).
+    3. Búsqueda por silicio Apple (`pCore`, `eCore`, `SoC`).
+    4. Detección por nombre que contenga `die` o `core`.
+  - Evita por completo lecturas en blanco o errores `--°C`.
 
 ---
 
-### 🏃 Sprint 4: Empaquetado Open Source, CI/CD y Documentación
+### 🏃 Sprint 4: Empaquetado Open Source, CI/CD y Documentación (✅ COMPLETADO)
 **Objetivo:** Dejar el repositorio impecable, atractivo y completamente automatizado para la comunidad de GitHub.
 
-* **Tarea 4.1 — Licencia y Archivos de Comunidad:**
-  - Añadir archivo `LICENSE` con la licencia **MIT** (permite libre uso, modificación y distribución sin trabas).
-  - Crear `CONTRIBUTING.md` con guías claras para que otros desarrolladores propongan perfiles o mejoras.
-  - Añadir plantillas de GitHub (`.github/ISSUE_TEMPLATE/` para bug reports y feature requests).
-* **Tarea 4.2 — GitHub Actions CI/CD (`.github/workflows/build-and-release.yml`):**
-  - Configurar pipeline automatizado en máquinas virtuales `macos-latest` de GitHub.
-  - Al hacer un *tag* o *release*, compilar automáticamente el binario Universal 2.
-  - Empaquetar un archivo `.dmg` estilizado o un `.zip` listo para descargar.
-* **Tarea 4.3 — README.md Bilingüe de Alta Calidad:**
-  - Redactar documentación completa en **Inglés y Español**.
-  - Insignias de estado (Build Status, Release Version, License MIT, macOS 12+).
-  - Capturas de pantalla reales en **Modo Claro** y **Modo Oscuro**.
-  - Matriz de compatibilidad probada por la comunidad.
-  - Instrucciones de instalación en 1 comando vía `curl` o descarga directa.
+* **Tarea 4.1 — Licencia y Archivos de Comunidad (✅):**
+  - Añadido archivo `LICENSE` bajo licencia libre **MIT**.
+  - Creado `CONTRIBUTING.md` con guías claras para forks, compilación, creación de perfiles y pull requests.
+  - Creadas plantillas de GitHub (`.github/ISSUE_TEMPLATE/`):
+    - `bug_report.yml`: Reporte estandarizado de errores con modelo y versión de macOS.
+    - `sensor_report.yml`: Envío de compatibilidad de hardware por la comunidad.
+    - `feature_request.yml`: Propuestas y mejoras.
+* **Tarea 4.2 — GitHub Actions CI/CD (`.github/workflows/build-and-release.yml`) (✅):**
+  - Pipeline automatizado en máquinas virtuales `macos-14` de GitHub.
+  - Compilación dual nativa (`x86_64` + `arm64`) y unificación con `lipo`.
+  - Empaquetado automático de `.dmg` y `.zip` adjuntados directamente a cada Release de GitHub (`v*`).
+* **Tarea 4.3 — Generador de Imagen de Disco DMG (`scripts/create-dmg.sh`) (✅):**
+  - Script independiente que genera `FanMaster-Universal.dmg` comprimido con enlace directo a `/Applications`.
+* **Tarea 4.4 — README.md Profesional para GitHub (✅):**
+  - Insignias dinámicas de estado (macOS 12+, Universal 2, Licencia MIT, Swift 5.9+, Build Passing).
+  - Matriz de compatibilidad detallada (Mac mini, MacBook Air/Pro, iMac, Mac Studio, Mac Pro).
+  - Instrucciones de instalación por descarga directa de DMG y compilación local.
+  - Explicación de permisos, Gatekeeper (`xattr -cr`) y comandos CLI.
 
 ---
 
-### 🏃 Sprint 5: Robustez, Hardening y Pruebas
-**Objetivo:** Garantizar estabilidad impecable, seguridad de permisos y tolerancia a fallos en casos de borde.
+### 🏃 Sprint 5: Robustez, Hardening y Diagnóstico Comunitario (✅ COMPLETADO)
+**Objetivo:** Garantizar estabilidad impecable, seguridad de permisos, tolerancia a fallos y herramientas de auto-diagnóstico.
 
-* **Tarea 5.1 — Degradación Elegante ante Privilegios Denegados:**
-  - Si el usuario ejecuta la app sin root y sin el daemon instalado, mostrar un aviso informativo no invasivo y operar en **Modo Monitor** (solo lectura de métricas) sin fallar.
-* **Tarea 5.2 — Manejo Seguro de Macs con Chip T2:**
-  - Implementar detección de chip T2 para gestionar llamadas donde bridgeOS bloquee la escritura manual del ventilador, ofreciendo feedback claro al usuario.
-* **Tarea 5.3 — Generación de Informe de Diagnóstico Térmico:**
-  - Botón en Configuración: *"Copiar diagnóstico del sistema"*.
-  - Genera un reporte anónimo con: modelo de Mac, sensores detectados, ventiladores y rangos leídos.
-  - Facilita a los usuarios de GitHub reportar soporte de nuevos modelos con un solo clic.
+* **Tarea 5.1 — Degradación Elegante y Modo Solo Lectura (✅):**
+  - Cuando se ejecuta sin privilegios de root o en entornos restringidos (ej. chip Apple T2), la aplicación opera de forma transparente en **Modo Monitor**.
+  - Indicador visual adaptativo en la barra superior y en el panel web (`#root-pill`) informando del estado de lectura sin bloquear la telemetría.
+  - Detección reactiva de restricciones de escritura (`isWriteRestricted`) en `FanController`.
+* **Tarea 5.2 — Generador de Informe de Diagnóstico (`--diagnostics`) (✅):**
+  - Comando de terminal implementado: `fanmaster --diagnostics`.
+  - Muestra un informe estructurado en Markdown con especificaciones del equipo, procesador, arquitectura, estado de permisos, ventiladores detectados y catálogo completo de sensores térmicos activos.
+  - Endpoint `/api/diagnostics` incorporado en el servidor HTTP.
+  - Botón interactivo en la pestaña de Configuración: **"📋 Copiar Reporte"** para copiar el informe al portapapeles con un clic.
+* **Tarea 5.3 — Manejo de Gatekeeper y Firma Ad-hoc (✅):**
+  - Firma profunda ad-hoc integrada en `install.sh`, en el empaquetador DMG y en el flujo de CI/CD.
+  - Documentada la resolución de advertencias de Gatekeeper (`xattr -cr /Applications/FanMaster.app`) en el `README.md`.
 
 ---
 

@@ -149,6 +149,54 @@ func configureLaunchAtLogin(enabled: Bool, startMinimized: Bool) {
     }
 }
 
+// MARK: - Diagnostics Generator
+
+func generateDiagnosticsReport(monitor: SystemMonitor, isRoot: Bool) -> String {
+    let fans = monitor.reader.readAllFans()
+    let temps = monitor.reader.readAllTemperatures()
+    let dateStr = ISO8601DateFormatter().string(from: Date())
+    
+    var md = """
+    # 📋 Reporte de Diagnóstico y Compatibilidad — FanMaster
+    **Fecha de Generación:** `\(dateStr)`
+    **Versión FanMaster:** `1.0.0 (Universal 2)`
+
+    ## 💻 Hardware y Sistema Operativo
+    - **Modelo Comercial:** \(SystemInfo.marketingModelName)
+    - **Identificador Técnico (`hw.model`):** `\(SystemInfo.modelIdentifier)`
+    - **Arquitectura de Ejecución:** `\(SystemInfo.architecture)`
+    - **Procesador Detectado:** \(SystemInfo.cpuBrand)
+    - **Versión de macOS:** \(SystemInfo.osVersion)
+    - **Privilegios de Ejecución:** \(isRoot ? "✅ Root (Control Pleno)" : "⚠️ No Root (Modo Monitor)")
+    - **Estado de Control SMC:** \(monitor.controller.isWriteRestricted ? "⚠️ Restringido (Chip T2 o sin permisos de escritura)" : "✅ Habilitado (Lectura y Escritura)")
+
+    ## 🌪️ Topología de Ventiladores (\(fans.count))
+    """
+    
+    if fans.isEmpty {
+        md += "\n- *Disipación Térmica Pasiva / Fanless (0 ventiladores mecánicos)*\n"
+    } else {
+        md += "\n| Índice | Nombre | RPM Actual | Mínimo | Máximo | Objetivo |\n"
+        md += "| :---: | :--- | :---: | :---: | :---: | :---: |\n"
+        for f in fans {
+            md += "| `\(f.index)` | \(f.name) | \(Int(round(f.currentRPM))) RPM | \(Int(round(f.minimumRPM))) RPM | \(Int(round(f.maximumRPM))) RPM | \(Int(round(f.targetRPM))) RPM |\n"
+        }
+    }
+    
+    md += """
+    
+    ## 🌡️ Sensores Térmicos Detectados (\(temps.count))
+    | Clave | Nombre del Sensor | Lectura Actual |
+    | :---: | :--- | :---: |
+    """
+    for t in temps {
+        md += "\n| `\(t.key)` | \(t.name) | \(String(format: "%.1f", t.currentTemp))°C |"
+    }
+    
+    md += "\n\n---\n*Reporte generado automáticamente para la comunidad de GitHub de FanMaster.*\n"
+    return md
+}
+
 // MARK: - Main entry point
 
 func main() {
@@ -177,6 +225,14 @@ func main() {
     var config = loadConfig()
     let monitor = SystemMonitor(smc: smc)
     monitor.updateInterval = config.updateInterval
+    let isRoot = (geteuid() == 0) || (getuid() == 0)
+    
+    // CLI Diagnostics Mode
+    if CommandLine.arguments.contains("--diagnostics") || CommandLine.arguments.contains("-d") {
+        let report = generateDiagnosticsReport(monitor: monitor, isRoot: isRoot)
+        print(report)
+        exit(0)
+    }
     
     // Detect fans & temps
     let initialFans = monitor.reader.readAllFans()
@@ -200,7 +256,6 @@ func main() {
     }
     
     // Check root / effective root
-    let isRoot = (geteuid() == 0) || (getuid() == 0)
     if isCliMode && !isRoot {
         print("\n⚠️  Ejecutándose sin root. El control de ventiladores estará deshabilitado.")
         print("   Para control completo: sudo fanmaster\n")
@@ -246,6 +301,7 @@ func main() {
                 "cpuUsage": monitor.cpuUsage,
                 "activeProfile": monitor.controller.activeProfile?.id ?? "none",
                 "isRoot": isRoot,
+                "isWriteRestricted": monitor.controller.isWriteRestricted || !isRoot,
                 "alertThreshold": config.alertTempThreshold,
                 "system": [
                     "modelIdentifier": SystemInfo.modelIdentifier,
@@ -257,6 +313,20 @@ func main() {
                 "timestamp": Date().timeIntervalSince1970
             ]
             return (200, "application/json", jsonString(data))
+            
+        case ("GET", "/api/diagnostics"):
+            let report = generateDiagnosticsReport(monitor: monitor, isRoot: isRoot)
+            let diagData: [String: Any] = [
+                "markdown": report,
+                "modelIdentifier": SystemInfo.modelIdentifier,
+                "modelName": SystemInfo.marketingModelName,
+                "architecture": SystemInfo.architecture,
+                "isRoot": isRoot,
+                "isWriteRestricted": monitor.controller.isWriteRestricted || !isRoot,
+                "fansCount": monitor.fans.count,
+                "sensorsCount": monitor.temperatures.count
+            ]
+            return (200, "application/json", jsonString(diagData))
             
         case ("GET", "/api/profiles"):
             let profilesData = config.profiles.map { p -> [String: Any] in

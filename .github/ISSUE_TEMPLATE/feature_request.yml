@@ -1,0 +1,22 @@
+name: "Sugerencia de Función (Feature Request)"
+description: "Propón una nueva funcionalidad o mejora de diseño para FanMaster"
+title: "[Idea]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¿Tienes una idea para hacer a FanMaster aún mejor? Comparte tu visión con la comunidad.
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Descripción de la propuesta
+      description: "¿Qué te gustaría que hiciera FanMaster y por qué sería útil?"
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: "¿Has probado otras soluciones o herramientas similares?"
+

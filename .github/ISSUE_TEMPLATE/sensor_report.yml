@@ -1,0 +1,35 @@
+name: "Reporte de Compatibilidad de Hardware"
+description: "Envía el reporte de telemetría de tu Mac para validar sensores y rangos de RPM"
+title: "[Hardware]: "
+labels: ["hardware-test", "compatibility"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¡Gracias por ayudarnos a validar FanMaster en diferentes modelos de Mac! 
+        Puedes obtener tu reporte ejecutando `fanmaster --diagnostics` en tu terminal o desde la pestaña de Configuración en la app.
+  - type: input
+    id: model
+    attributes:
+      label: Modelo de Mac y Año
+      placeholder: "Ej. iMac 27\" Retina 5K (2017) o Mac Studio M2 Max"
+    validations:
+      required: true
+  - type: dropdown
+    id: architecture
+    attributes:
+      label: Arquitectura del Procesador
+      options:
+        - "Intel Core (x86_64)"
+        - "Apple Silicon M-Series (arm64)"
+    validations:
+      required: true
+  - type: textarea
+    id: report-output
+    attributes:
+      label: Salida de Diagnóstico
+      description: "Pega la salida completa de `fanmaster --diagnostics`"
+      render: markdown
+    validations:
+      required: true
+

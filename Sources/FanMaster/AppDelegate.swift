@@ -146,6 +146,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             primarySensor = monitor.temperatures.first(where: { $0.key == targetKey })
                 ?? monitor.temperatures.first(where: { $0.key == "TC0D" })
                 ?? monitor.temperatures.first(where: { $0.key == "TC0P" })
+                ?? monitor.temperatures.first(where: { $0.name.lowercased().contains("die") || $0.name.lowercased().contains("core") })
                 ?? monitor.temperatures.first
         }
         

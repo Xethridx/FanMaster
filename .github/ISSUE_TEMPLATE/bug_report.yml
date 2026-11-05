@@ -1,0 +1,43 @@
+name: "Reporte de Error (Bug Report)"
+description: "Reporta un problema técnico o un comportamiento inesperado en FanMaster"
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por tomarte el tiempo de reportar este problema. Por favor proporciona la mayor cantidad de información posible.
+  - type: input
+    id: mac-model
+    attributes:
+      label: Modelo de Mac
+      description: "Ejemplo: Mac mini (Late 2012), MacBook Pro 16\" (2019), MacBook Air M2"
+      placeholder: "Ej. Macmini6,2 o MacBookPro16,1"
+    validations:
+      required: true
+  - type: dropdown
+    id: os-version
+    attributes:
+      label: Versión de macOS
+      options:
+        - "macOS 15 (Sequoia)"
+        - "macOS 14 (Sonoma)"
+        - "macOS 13 (Ventura)"
+        - "macOS 12 (Monterey)"
+        - "Otro"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Descripción del problema
+      description: "¿Qué ocurrió y cómo podemos reproducirlo?"
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Reporte de Diagnóstico (`fanmaster --diagnostics`)
+      description: "Pega aquí la salida de `fanmaster --diagnostics` o el reporte copiado desde la app"
+      render: shell
+

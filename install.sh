@@ -49,6 +49,7 @@ SOURCES=(
   "$SCRIPT_DIR/Sources/FanMasterCore/SMCConnection.swift"
   "$SCRIPT_DIR/Sources/FanMasterCore/Models.swift"
   "$SCRIPT_DIR/Sources/FanMasterCore/SystemInfo.swift"
+  "$SCRIPT_DIR/Sources/FanMasterCore/HIDThermalReader.swift"
   "$SCRIPT_DIR/Sources/FanMasterCore/SMCReaderWriter.swift"
   "$SCRIPT_DIR/Sources/FanMasterCore/FanController.swift"
   "$SCRIPT_DIR/Sources/FanMasterCore/HTTPServer.swift"

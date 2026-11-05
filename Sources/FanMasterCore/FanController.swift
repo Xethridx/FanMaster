@@ -8,6 +8,7 @@ public class FanController {
     
     public private(set) var activeProfile: FanProfile?
     public private(set) var isRunning = false
+    public private(set) var isWriteRestricted = false
     private var controlTask: Task<Void, Never>?
     
     /// How often (in seconds) the controller re-evaluates temperatures and adjusts fans
@@ -98,8 +99,9 @@ public class FanController {
                     try writer.setFanManualControl(fan.index, enabled: true)
                     try writer.setFanTargetRPM(fan.index, rpm: clamped)
                     lastSetRPM[fan.index] = clamped
+                    isWriteRestricted = false
                 } catch {
-                    // Permission error — stop trying
+                    isWriteRestricted = true
                 }
             }
         }

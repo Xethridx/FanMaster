@@ -1,35 +1,105 @@
 import Foundation
 
-// MARK: - Known SMC Keys
+import Foundation
 
-/// Temperature sensor keys for Mac mini 2012 (Intel Core i5/i7)
+// MARK: - Known SMC Keys (Catálogo Extendido ~80 Claves Intel)
+
+/// Temperature sensor keys covering Intel Macs (Mac mini, MacBook Air/Pro, iMac, Mac Pro)
 public let knownTemperatureKeys: [(key: String, name: String)] = [
+    // CPU Cores & Die
     ("TC0D", "CPU Die"),
-    ("TC0E", "CPU Die 2"),
-    ("TC0F", "CPU Die 3"),
-    ("TC0H", "CPU PECI"),
+    ("TC0E", "CPU Die Virtual 1"),
+    ("TC0F", "CPU Die Virtual 2"),
     ("TC0P", "CPU Proximity"),
+    ("TC0H", "CPU Heatsink"),
+    ("TC0C", "CPU Core 0"),
+    ("TC1C", "CPU Core 1"),
+    ("TC2C", "CPU Core 2"),
+    ("TC3C", "CPU Core 3"),
+    ("TC4C", "CPU Core 4"),
+    ("TC5C", "CPU Core 5"),
+    ("TC6C", "CPU Core 6"),
+    ("TC7C", "CPU Core 7"),
+    ("TC8C", "CPU Core 8"),
+    ("TC9C", "CPU Core 9"),
     ("TCAD", "CPU Core A"),
     ("TCBD", "CPU Core B"),
-    ("TGDD", "GPU Die"),
-    ("TG0D", "GPU Die 2"),
+    ("TCCD", "CPU Core C"),
+    ("TCDD", "CPU Core D"),
+    ("TCPC", "CPU Package"),
+    ("TCSA", "CPU System Agent"),
+    ("TCTD", "CPU Die Temp"),
+    ("TCAH", "CPU Heatsink A"),
+    ("TCBH", "CPU Heatsink B"),
+    
+    // GPU (Integrated & Discrete)
+    ("TG0D", "GPU Die"),
+    ("TG1D", "GPU 2 Die (Discreta)"),
     ("TG0P", "GPU Proximity"),
-    ("THSP", "Heatsink Proximity"),
-    ("TM0P", "Memory Bank A"),
-    ("TM1P", "Memory Bank B"),
-    ("Th1H", "Heatsink 1"),
-    ("Th2H", "Heatsink 2"),
+    ("TG1P", "GPU 2 Proximity"),
+    ("TG0H", "GPU Heatsink"),
+    ("TG1H", "GPU 2 Heatsink"),
+    ("TCGC", "Intel HD Graphics"),
+    ("TGDD", "GPU Die Digital"),
+    ("TGVP", "GPU VRAM Proximity"),
+    ("TG0M", "GPU Memory"),
+    ("TG1M", "GPU 2 Memory"),
+    
+    // PCH, Chipset & Thunderbolt
     ("TP0P", "PCH Proximity"),
     ("TPCD", "PCH Die"),
-    ("TW0P", "Airport Proximity"),
-    ("Tm0P", "Mainboard Proximity"),
+    ("TP0D", "PCH Die Temp"),
+    ("TI0P", "Thunderbolt 1 Proximity"),
+    ("TI1P", "Thunderbolt 2 Proximity"),
+    ("TI2P", "Thunderbolt 3 Proximity"),
+    ("TI3P", "Thunderbolt 4 Proximity"),
+    ("TN0D", "Northbridge Die"),
+    ("TN0P", "Northbridge Proximity"),
+    ("TN0H", "Northbridge Heatsink"),
     ("Ts0P", "Platform Controller"),
+    ("Ts0S", "Platform Controller Sensor"),
+    
+    // Memory (RAM)
+    ("TM0P", "Memory Bank A"),
+    ("TM1P", "Memory Bank B"),
+    ("TM2P", "Memory Bank C"),
+    ("TM3P", "Memory Bank D"),
+    ("TM0S", "Memory Slot 1"),
+    ("TM1S", "Memory Slot 2"),
+    ("TM2S", "Memory Slot 3"),
+    ("TM3S", "Memory Slot 4"),
+    ("TM4S", "Memory Slot 5"),
+    ("TM5S", "Memory Slot 6"),
+    ("TM6S", "Memory Slot 7"),
+    ("TM7S", "Memory Slot 8"),
+    ("TMA1", "Memory Module A1"),
+    ("TMA2", "Memory Module A2"),
+    ("TMB1", "Memory Module B1"),
+    ("TMB2", "Memory Module B2"),
+    
+    // Ambient, Battery, Enclosure & Heatsinks
+    ("TA0P", "Ambient Air Proximity"),
+    ("TA1P", "Ambient Air Proximity 2"),
+    ("TW0P", "Airport / Wi-Fi"),
+    ("TB0T", "Battery TS_MAX"),
+    ("TB1T", "Battery Cell 1"),
+    ("TB2T", "Battery Cell 2"),
+    ("TB3T", "Battery Cell 3"),
+    ("TL0P", "LCD Panel Proximity"),
+    ("Tm0P", "Mainboard Proximity"),
+    ("Th1H", "Heatsink 1"),
+    ("Th2H", "Heatsink 2"),
+    ("Th3H", "Heatsink 3"),
+    ("THSP", "Heatsink Proximity"),
+    ("Tp0C", "Fuente de Alimentación"),
+    ("Te0t", "Ranura PCIe Ambient"),
 ]
 
 // MARK: - SMC Reader
 
 public class SMCReader {
     private let smc: SMCConnection
+    private let hidReader = HIDThermalReader()
     
     public init(smc: SMCConnection) {
         self.smc = smc
@@ -37,24 +107,73 @@ public class SMCReader {
     
     // MARK: - Temperature
     
-    /// Read temperature from a specific key
-    public func temperature(for key: String) -> Double? {
+    /// Read temperature from a specific SMC key
+    public func rawSMCTemperature(for key: String) -> Double? {
         let fcc = FourCharCode(key)
         guard let bytes = try? smc.readKey(fcc), bytes.count >= 2 else { return nil }
         let temp = bytes.sp78Value
-        // Sanity check: valid temperature range
-        guard temp > 0 && temp < 125 else { return nil }
+        // Sanity check: valid temperature range (5°C to 125°C)
+        guard temp > 5.0 && temp < 125.0 else { return nil }
         return temp
     }
     
-    /// Discover and read all available temperature sensors
-    public func readAllTemperatures() -> [TemperatureSensor] {
-        var sensors: [TemperatureSensor] = []
-        for entry in knownTemperatureKeys {
-            if let temp = temperature(for: entry.key) {
-                sensors.append(TemperatureSensor(key: entry.key, name: entry.name, currentTemp: temp))
+    /// Read temperature with smart resolution and fallback support
+    public func temperature(for key: String) -> Double? {
+        let allSensors = readAllTemperatures()
+        guard !allSensors.isEmpty else { return nil }
+        
+        // 1. Si se solicita "MAX", retornar la temperatura máxima
+        if key == "MAX" {
+            return allSensors.filter { $0.key != "TC0G" }.map(\.currentTemp).max()
+        }
+        
+        // 2. Coincidencia directa por clave
+        if let direct = allSensors.first(where: { $0.key == key }) {
+            return direct.currentTemp
+        }
+        
+        // 3. Fallback inteligente: buscar el sensor principal de CPU/SoC
+        let cpuFallbacks = ["TC0D", "TC0P", "TC0E", "TC0C", "TCAD", "TC0H"]
+        for fb in cpuFallbacks {
+            if let found = allSensors.first(where: { $0.key == fb }) {
+                return found.currentTemp
             }
         }
+        
+        // 4. Si es Apple Silicon, buscar pCore, eCore o SoC
+        if let appleSiliconCPU = allSensors.first(where: {
+            let k = $0.key.lowercased()
+            return k.contains("pcore") || k.contains("ecore") || k.contains("soc")
+        }) {
+            return appleSiliconCPU.currentTemp
+        }
+        
+        // 5. Último recurso: primer sensor disponible
+        return allSensors.first?.currentTemp
+    }
+    
+    /// Discover and read all available temperature sensors (AppleSMC + Apple Silicon IOHID)
+    public func readAllTemperatures() -> [TemperatureSensor] {
+        var sensors: [TemperatureSensor] = []
+        var seenKeys = Set<String>()
+        
+        // 1. Leer sensores estándar Intel / AppleSMC
+        for entry in knownTemperatureKeys {
+            if let temp = rawSMCTemperature(for: entry.key) {
+                sensors.append(TemperatureSensor(key: entry.key, name: entry.name, currentTemp: temp))
+                seenKeys.insert(entry.key)
+            }
+        }
+        
+        // 2. Leer sensores Apple Silicon IOHID (M1/M2/M3/M4)
+        let hidSensors = hidReader.readTemperatures()
+        for hid in hidSensors {
+            if !seenKeys.contains(hid.key) {
+                sensors.append(hid)
+                seenKeys.insert(hid.key)
+            }
+        }
+        
         return sensors.sorted { $0.name < $1.name }
     }
     

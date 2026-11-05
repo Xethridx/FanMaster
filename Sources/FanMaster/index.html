@@ -1474,6 +1474,18 @@ input:checked + .slider:before {
             <span id="cfg-hardware-tag" class="sensor-key-tag">—</span>
           </div>
         </div>
+
+        <div class="setting-row">
+          <div class="setting-meta">
+            <span class="setting-title">Diagnóstico y Compatibilidad de Hardware</span>
+            <span class="setting-desc">Genera un informe completo de sensores, ventiladores y permisos en formato Markdown para adjuntar a un Issue de GitHub.</span>
+          </div>
+          <div class="setting-control">
+            <button class="action-btn" onclick="copyDiagnosticsReport()" style="padding: 5px 12px; font-size: 11px; font-weight: 500; border-radius: 6px; cursor: pointer; background: var(--bg-control); border: 1px solid var(--border); color: var(--text-primary); transition: all 0.15s ease;">
+              📋 Copiar Reporte
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1726,6 +1738,38 @@ function renderSystemInfo() {
   if (cfgTag) {
     cfgTag.textContent = `${sys.modelIdentifier} (${sys.architecture})`;
   }
+
+  // Actualizar pill de permisos (Control Activo vs Modo Monitor)
+  const rootPill = document.getElementById('root-pill');
+  const rootText = document.getElementById('root-text');
+  if (rootPill && rootText) {
+    if (state.isWriteRestricted || !state.isRoot) {
+      rootPill.className = 'pill-badge';
+      rootPill.style.borderColor = 'rgba(255, 159, 10, 0.4)';
+      rootText.textContent = 'Modo Monitor';
+      rootPill.title = 'Acceso de solo lectura: el control de ventiladores lo gestiona macOS.';
+    } else {
+      rootPill.className = 'pill-badge active';
+      rootPill.style.borderColor = '';
+      rootText.textContent = 'Control Activo';
+      rootPill.title = 'Privilegios de Root habilitados para control total.';
+    }
+  }
+}
+
+async function copyDiagnosticsReport() {
+  try {
+    const res = await fetch('/api/diagnostics');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (data.markdown && navigator.clipboard) {
+      await navigator.clipboard.writeText(data.markdown);
+      showToast('¡Reporte copiado al portapapeles!');
+    }
+  } catch (err) {
+    showToast('Error al generar diagnóstico');
+  }
+}
 }
 
 function selectFanTab(tab) {
@@ -1875,7 +1919,11 @@ function renderCPUMetrics() {
   if (targetKey === 'MAX') {
     cpuSensor = state.temperatures.filter(s => s.key !== 'TC0G').sort((a,b) => b.temp - a.temp)[0];
   } else {
-    cpuSensor = state.temperatures.find(s => s.key === targetKey) || state.temperatures.find(s => s.key === 'TC0D') || state.temperatures[0];
+    cpuSensor = state.temperatures.find(s => s.key === targetKey) 
+      || state.temperatures.find(s => s.key === 'TC0D') 
+      || state.temperatures.find(s => s.key === 'TC0P')
+      || state.temperatures.find(s => s.name && (s.name.toLowerCase().includes('die') || s.name.toLowerCase().includes('core')))
+      || state.temperatures[0];
   }
   if (!cpuSensor) return;
 

@@ -1,0 +1,22 @@
+# Build outputs & staging
+.build/
+.dmg_staging/
+*.dmg
+*.zip
+
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Xcode / SPM user state
+*.xcuserdata/
+xcuserdata/
+.swiftpm/
+
+# Local FanMaster config
+~/.fanmaster/
+

@@ -1112,51 +1112,79 @@ input:checked + .slider:before {
 
     <div class="grid-columns">
       <!-- TARJETA VENTILADOR -->
-      <div class="card">
+      <!-- TARJETA VENTILADOR -->
+      <div class="card" id="fan-main-card">
         <div class="card-header">
           <div class="card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg id="fan-header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
-            Ventilador Principal
+            <span id="fan-card-title">Ventilador Principal</span>
           </div>
           <div class="card-badge" id="fan-target-badge">Objetivo: -- RPM</div>
         </div>
 
-        <div class="fan-display">
-          <div class="fan-metrics">
-            <div id="fan-rpm-val" class="fan-rpm-large num">----</div>
-            <div class="fan-rpm-unit">Revoluciones por Minuto</div>
+        <!-- Selector de Ventiladores si el equipo tiene 2 o más -->
+        <div id="multi-fan-selector" class="segmented-control" style="display: none; margin-bottom: 4px;"></div>
+
+        <!-- Vista Activa con Ventilador Mecánico -->
+        <div id="fan-active-view">
+          <div class="fan-display">
+            <div class="fan-metrics">
+              <div id="fan-rpm-val" class="fan-rpm-large num">----</div>
+              <div class="fan-rpm-unit" id="fan-unit-desc">Revoluciones por Minuto</div>
+            </div>
+
+            <div class="fan-icon-wrap">
+              <svg id="fan-animated-svg" class="fan-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 12c-2.5-2.5-1.5-6.5 0-7 1.5 0.5 2.5 4.5 0 7z"/>
+                <path d="M12 12c2.5-2.5 6.5-1.5 7 0-0.5 1.5-4.5 2.5-7 0z"/>
+                <path d="M12 12c2.5 2.5 1.5 6.5 0 7-1.5-0.5-2.5-4.5 0-7z"/>
+                <path d="M12 12c-2.5 2.5-6.5 1.5-7 0 0.5-1.5 4.5-2.5 7 0z"/>
+                <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+              </svg>
+            </div>
           </div>
 
-          <div class="fan-icon-wrap">
-            <svg id="fan-animated-svg" class="fan-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 12c-2.5-2.5-1.5-6.5 0-7 1.5 0.5 2.5 4.5 0 7z"/>
-              <path d="M12 12c2.5-2.5 6.5-1.5 7 0-0.5 1.5-4.5 2.5-7 0z"/>
-              <path d="M12 12c2.5 2.5 1.5 6.5 0 7-1.5-0.5-2.5-4.5 0-7z"/>
-              <path d="M12 12c-2.5 2.5-6.5 1.5-7 0 0.5-1.5 4.5-2.5 7 0z"/>
-              <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-            </svg>
+          <div class="fan-bar-container">
+            <div class="progress-track">
+              <div id="fan-progress-fill" class="progress-fill" style="width: 0%;"></div>
+            </div>
+            <div class="scale-limits num">
+              <span id="fan-min-lbl">1,800 RPM (Mín)</span>
+              <span id="fan-pct-lbl" style="color:var(--text-secondary);font-weight:600">--%</span>
+              <span id="fan-max-lbl">5,500 RPM (Máx)</span>
+            </div>
           </div>
+
+          <!-- Desglose por ventilador si el Mac tiene 2 o más -->
+          <div id="multi-fan-breakdown" style="display: none; flex-direction: column; gap: 6px; margin-top: 10px;"></div>
         </div>
 
-        <div class="fan-bar-container">
-          <div class="progress-track">
-            <div id="fan-progress-fill" class="progress-fill" style="width: 0%;"></div>
+        <!-- Vista Fanless (0 Ventiladores) -->
+        <div id="fan-fanless-view" style="display: none; padding: 6px 0 4px;">
+          <div style="display: flex; align-items: center; gap: 11px; margin-bottom: 9px;">
+            <div class="brand-icon-wrap" style="width: 36px; height: 36px; border-radius: 9px; background: rgba(52, 199, 89, 0.15); border: 1px solid rgba(52, 199, 89, 0.35);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--system-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <div>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text-primary)">Refrigeración Pasiva (Fanless)</div>
+              <div style="font-size: 10px; color: var(--text-tertiary)">0 dB • Sin ventiladores mecánicos</div>
+            </div>
           </div>
-          <div class="scale-limits num">
-            <span id="fan-min-lbl">1,800 RPM (Mín)</span>
-            <span id="fan-pct-lbl" style="color:var(--text-secondary);font-weight:600">--%</span>
-            <span id="fan-max-lbl">5,500 RPM (Máx)</span>
+          <div style="font-size: 11px; line-height: 1.45; color: var(--text-secondary); background: var(--bg-card-sub); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border);">
+            Este Mac disipa el calor de forma pasiva a través del chasis de aluminio. La regulación térmica se gestiona mediante control adaptativo de frecuencia de macOS.
           </div>
         </div>
 
         <!-- Mode Segmented Control -->
-        <div class="segmented-control">
+        <div id="fan-mode-controls" class="segmented-control">
           <button id="mode-auto" class="segment-btn" onclick="setMode('auto')">Automático (Apple)</button>
           <button id="mode-curve" class="segment-btn active" onclick="setMode('curve')">Curva Inteligente</button>
-          <button id="mode-max" class="segment-btn" onclick="setMode('max')">Máximo (5,500)</button>
+          <button id="mode-max" class="segment-btn" onclick="setMode('max')">Máximo (100%)</button>
         </div>
       </div>
 
@@ -1485,6 +1513,7 @@ let config = {
 
 let profilesData = [];
 let currentTab = 'control';
+let selectedFanTab = 'all';
 let statusPollInterval = null;
 
 const curveCanvas = document.getElementById('curveCanvas');
@@ -1699,20 +1728,131 @@ function renderSystemInfo() {
   }
 }
 
+function selectFanTab(tab) {
+  selectedFanTab = tab;
+  renderFanMetrics();
+}
+
 function renderFanMetrics() {
-  if (!state.fans || state.fans.length === 0) return;
-  const fan = state.fans[0];
-  const rpm = Math.round(fan.currentRPM);
-  const min = Math.round(fan.minimumRPM || 1800);
-  const max = Math.round(fan.maximumRPM || 5500);
-  const target = Math.round(fan.targetRPM || rpm);
+  const fans = state.fans || [];
+  const cardTitle = document.getElementById('fan-card-title');
+  const targetBadge = document.getElementById('fan-target-badge');
+  const activeView = document.getElementById('fan-active-view');
+  const fanlessView = document.getElementById('fan-fanless-view');
+  const multiSelector = document.getElementById('multi-fan-selector');
+  const multiBreakdown = document.getElementById('multi-fan-breakdown');
+  const modeControls = document.getElementById('fan-mode-controls');
+
+  // Caso 1: Fanless (0 Ventiladores mecánicos)
+  if (fans.length === 0) {
+    if (activeView) activeView.style.display = 'none';
+    if (fanlessView) fanlessView.style.display = 'block';
+    if (multiSelector) multiSelector.style.display = 'none';
+    if (modeControls) modeControls.style.display = 'none';
+    if (cardTitle) cardTitle.textContent = 'Refrigeración Pasiva';
+    if (targetBadge) {
+      targetBadge.textContent = 'Fanless (0 dB)';
+      targetBadge.className = 'card-badge normal';
+    }
+    return;
+  }
+
+  // Hay ventiladores mecánicos presentes
+  if (activeView) activeView.style.display = 'block';
+  if (fanlessView) fanlessView.style.display = 'none';
+  if (modeControls) modeControls.style.display = 'flex';
+
+  // Configuración Multi-ventilador (2 o más ventiladores)
+  if (fans.length > 1) {
+    if (multiSelector) {
+      multiSelector.style.display = 'flex';
+      multiSelector.innerHTML = '';
+      
+      const btnAll = document.createElement('button');
+      btnAll.className = 'segment-btn' + (selectedFanTab === 'all' ? ' active' : '');
+      btnAll.textContent = 'Todos (Sync)';
+      btnAll.onclick = () => selectFanTab('all');
+      multiSelector.appendChild(btnAll);
+
+      fans.forEach((f, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'segment-btn' + (selectedFanTab === idx ? ' active' : '');
+        btn.textContent = f.name;
+        btn.onclick = () => selectFanTab(idx);
+        multiSelector.appendChild(btn);
+      });
+    }
+  } else {
+    if (multiSelector) multiSelector.style.display = 'none';
+    if (multiBreakdown) multiBreakdown.style.display = 'none';
+  }
+
+  let rpm = 0, min = 1200, max = 5500, target = 0, pct = 0;
+
+  if (fans.length > 1 && selectedFanTab === 'all') {
+    // Modo agrupado / sincronizado
+    if (cardTitle) cardTitle.textContent = `${fans.length} Ventiladores Enlazados`;
+    const unitDesc = document.getElementById('fan-unit-desc');
+    if (unitDesc) unitDesc.textContent = 'RPM Promedio Sincronizado';
+
+    const sumRPM = fans.reduce((acc, f) => acc + (f.currentRPM || 0), 0);
+    rpm = Math.round(sumRPM / fans.length);
+    min = Math.round(Math.min(...fans.map(f => f.minimumRPM || 1200)));
+    max = Math.round(Math.max(...fans.map(f => f.maximumRPM || 5500)));
+    target = Math.round(fans.reduce((acc, f) => acc + (f.targetRPM || f.currentRPM || 0), 0) / fans.length);
+    pct = max > min ? Math.max(0, Math.min(100, ((rpm - min) / (max - min)) * 100)) : 0;
+
+    // Renderizar desglose individual de cada ventilador
+    if (multiBreakdown) {
+      multiBreakdown.style.display = 'flex';
+      multiBreakdown.innerHTML = '';
+      fans.forEach(f => {
+        const fRpm = Math.round(f.currentRPM || 0);
+        const fMin = Math.round(f.minimumRPM || 1200);
+        const fMax = Math.round(f.maximumRPM || 5500);
+        const fPct = fMax > fMin ? Math.max(0, Math.min(100, ((fRpm - fMin) / (fMax - fMin)) * 100)) : 0;
+        const dur = Math.max(0.3, Math.min(3.5, 4.0 - (fPct / 100) * 3.4));
+
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:6px 9px;background:var(--bg-card-sub);border-radius:7px;border:1px solid var(--border);';
+        item.innerHTML = `
+          <div style="display:flex;align-items:center;gap:7px;">
+            <svg style="width:13px;height:13px;color:var(--system-blue);animation:fanSpin ${dur.toFixed(2)}s linear infinite;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="2"/>
+              <path d="M12 12c-2.5-2.5-1.5-6.5 0-7 1.5 0.5 2.5 4.5 0 7z"/>
+              <path d="M12 12c2.5-2.5 6.5-1.5 7 0-0.5 1.5-4.5 2.5-7 0z"/>
+            </svg>
+            <span style="font-size:11px;font-weight:500;">${f.name}</span>
+          </div>
+          <div style="font-size:11px;font-weight:600;" class="num">
+            ${fRpm.toLocaleString('es-ES')} RPM 
+            <span style="font-size:10px;font-weight:400;color:var(--text-tertiary);margin-left:4px;">(${Math.round(fPct)}%)</span>
+          </div>
+        `;
+        multiBreakdown.appendChild(item);
+      });
+    }
+  } else {
+    // Un solo ventilador o ventilador seleccionado individualmente
+    const activeIdx = (typeof selectedFanTab === 'number' && fans[selectedFanTab]) ? selectedFanTab : 0;
+    const fan = fans[activeIdx] || fans[0];
+    
+    if (cardTitle) cardTitle.textContent = fan.name;
+    const unitDesc = document.getElementById('fan-unit-desc');
+    if (unitDesc) unitDesc.textContent = 'Revoluciones por Minuto';
+    if (multiBreakdown) multiBreakdown.style.display = 'none';
+
+    rpm = Math.round(fan.currentRPM || 0);
+    min = Math.round(fan.minimumRPM || 1200);
+    max = Math.round(fan.maximumRPM || 5500);
+    target = Math.round(fan.targetRPM || rpm);
+    pct = max > min ? Math.max(0, Math.min(100, ((rpm - min) / (max - min)) * 100)) : 0;
+  }
 
   document.getElementById('fan-rpm-val').textContent = rpm.toLocaleString('es-ES');
-  document.getElementById('fan-target-badge').textContent = `Objetivo: ${target.toLocaleString('es-ES')} RPM`;
+  if (targetBadge) targetBadge.textContent = `Objetivo: ${target.toLocaleString('es-ES')} RPM`;
   document.getElementById('fan-min-lbl').textContent = `${min.toLocaleString('es-ES')} RPM (Mín)`;
   document.getElementById('fan-max-lbl').textContent = `${max.toLocaleString('es-ES')} RPM (Máx)`;
-
-  const pct = Math.max(0, Math.min(100, ((rpm - min) / (max - min)) * 100));
   document.getElementById('fan-progress-fill').style.width = pct.toFixed(1) + '%';
   document.getElementById('fan-pct-lbl').textContent = Math.round(pct) + '%';
 
@@ -1801,7 +1941,7 @@ function renderProfiles() {
     if (p.id === 'balanced') desc = 'Equilibrio acústico y térmico estándar.';
     else if (p.id === 'silent') desc = 'Prioriza acústica relajando el flujo de aire.';
     else if (p.id === 'performance') desc = 'Disipación anticipada para cargas de trabajo.';
-    else if (p.id === 'max') desc = 'Régimen continuo a 5,500 RPM para máxima ventilación.';
+    else if (p.id === 'max') desc = 'Régimen continuo al 100% para máxima ventilación.';
 
     card.innerHTML = `
       <div class="p-name">${p.name}</div>
@@ -1913,13 +2053,18 @@ function drawCurve() {
 
   ctx.clearRect(0, 0, w, h);
 
-  const padL = 36, padR = 16, padT = 10, padB = 20;
+  const padL = 38, padR = 16, padT = 12, padB = 22;
   const graphW = w - padL - padR;
   const graphH = h - padT - padB;
 
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
 
-  // Horizontal Grid Lines
+  // Detección dinámica de límites físicos según el hardware presente
+  const primaryFan = (state.fans && state.fans.length > 0) ? state.fans[0] : null;
+  const minRPM = primaryFan ? Math.round(primaryFan.minimumRPM || 1200) : 1200;
+  const maxRPM = primaryFan ? Math.round(primaryFan.maximumRPM || 5500) : 5500;
+
+  // Líneas de cuadrícula horizontales relativas (0% – 100%)
   ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.06)';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
@@ -1929,19 +2074,19 @@ function drawCurve() {
     ctx.lineTo(w - padR, y);
     ctx.stroke();
 
-    const rpmVal = Math.round(5500 - (3700 / 4) * i);
+    const pctVal = 100 - i * 25;
     ctx.fillStyle = isLight ? 'rgba(0, 0, 0, 0.45)' : 'rgba(255, 255, 255, 0.35)';
     ctx.font = '8.5px -apple-system, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText(rpmVal, padL - 6, y + 3);
+    ctx.fillText(`${pctVal}%`, padL - 6, y + 3);
   }
 
   const activeObj = profilesData.find(p => p.id === state.activeProfile) || {
     curvePoints: [
-      { temperature: 40, fanSpeed: 1800 },
-      { temperature: 65, fanSpeed: 2500 },
-      { temperature: 80, fanSpeed: 4200 },
-      { temperature: 92, fanSpeed: 5500 }
+      { temperature: 40, fanSpeed: 5, percentage: 5 },
+      { temperature: 55, fanSpeed: 25, percentage: 25 },
+      { temperature: 70, fanSpeed: 60, percentage: 60 },
+      { temperature: 85, fanSpeed: 100, percentage: 100 }
     ]
   };
 
@@ -1949,28 +2094,36 @@ function drawCurve() {
   if (points.length < 2) { ctx.restore(); return; }
 
   const minT = 30, maxT = 95;
-  const minR = 1800, maxR = 5500;
+
+  function getPointPct(pt) {
+    if (typeof pt.percentage === 'number') return Math.max(0, Math.min(100, pt.percentage));
+    if (pt.fanSpeed <= 100) return Math.max(0, Math.min(100, pt.fanSpeed));
+    // Normalizar RPM absoluto legado
+    return Math.max(0, Math.min(100, ((pt.fanSpeed - minRPM) / (maxRPM - minRPM)) * 100));
+  }
 
   function toX(t) {
     return padL + ((t - minT) / (maxT - minT)) * graphW;
   }
-  function toY(r) {
-    return padT + graphH - ((r - minR) / (maxR - minR)) * graphH;
+  function toY(pct) {
+    return padT + graphH - (pct / 100.0) * graphH;
   }
 
-  // Draw Spline Curve
+  // Dibujar curva Spline Bezier
   ctx.beginPath();
   const sortedPoints = [...points].sort((a,b) => a.temperature - b.temperature);
   
-  ctx.moveTo(toX(sortedPoints[0].temperature), toY(sortedPoints[0].fanSpeed));
+  ctx.moveTo(toX(sortedPoints[0].temperature), toY(getPointPct(sortedPoints[0])));
   for (let i = 0; i < sortedPoints.length - 1; i++) {
     const p0 = sortedPoints[i];
     const p1 = sortedPoints[i + 1];
+    const y0 = toY(getPointPct(p0));
+    const y1 = toY(getPointPct(p1));
     const cpX = (toX(p0.temperature) + toX(p1.temperature)) / 2;
-    ctx.bezierCurveTo(cpX, toY(p0.fanSpeed), cpX, toY(p1.fanSpeed), toX(p1.temperature), toY(p1.fanSpeed));
+    ctx.bezierCurveTo(cpX, y0, cpX, y1, toX(p1.temperature), y1);
   }
 
-  // Gradient Area Fill
+  // Relleno degradado bajo la curva
   const gradient = ctx.createLinearGradient(0, padT, 0, padT + graphH);
   gradient.addColorStop(0, isLight ? 'rgba(0, 122, 255, 0.20)' : 'rgba(10, 132, 255, 0.28)');
   gradient.addColorStop(1, isLight ? 'rgba(0, 122, 255, 0.0)' : 'rgba(10, 132, 255, 0.0)');
@@ -1983,14 +2136,16 @@ function drawCurve() {
   ctx.fill();
   ctx.restore();
 
-  // Stroke Curve
+  // Trazo de la curva
   ctx.beginPath();
-  ctx.moveTo(toX(sortedPoints[0].temperature), toY(sortedPoints[0].fanSpeed));
+  ctx.moveTo(toX(sortedPoints[0].temperature), toY(getPointPct(sortedPoints[0])));
   for (let i = 0; i < sortedPoints.length - 1; i++) {
     const p0 = sortedPoints[i];
     const p1 = sortedPoints[i + 1];
+    const y0 = toY(getPointPct(p0));
+    const y1 = toY(getPointPct(p1));
     const cpX = (toX(p0.temperature) + toX(p1.temperature)) / 2;
-    ctx.bezierCurveTo(cpX, toY(p0.fanSpeed), cpX, toY(p1.fanSpeed), toX(p1.temperature), toY(p1.fanSpeed));
+    ctx.bezierCurveTo(cpX, y0, cpX, y1, toX(p1.temperature), y1);
   }
   ctx.strokeStyle = '#0a84ff';
   ctx.lineWidth = 2.2;
@@ -1999,10 +2154,11 @@ function drawCurve() {
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // Draw Control Points
+  // Dibujar puntos de control con temperatura
   sortedPoints.forEach(pt => {
+    const ptPct = getPointPct(pt);
     const px = toX(pt.temperature);
-    const py = toY(pt.fanSpeed);
+    const py = toY(ptPct);
 
     ctx.beginPath();
     ctx.arc(px, py, 3.5, 0, Math.PI * 2);
@@ -2018,13 +2174,14 @@ function drawCurve() {
     ctx.fillText(`${pt.temperature}°C`, px, padT + graphH + 13);
   });
 
-  // Current Operating Point (Live Animated Glowing Dot)
+  // Punto de operación actual en vivo (Live Animated Dot con aura verde)
   const targetKey = config.menuBarSensorKey || 'TC0D';
   const cpuSensor = state.temperatures.find(s => s.key === targetKey) || state.temperatures.find(s => s.key === 'TC0D') || state.temperatures[0];
-  const curFan = state.fans[0];
+  const curFan = (state.fans && state.fans.length > 0) ? state.fans[0] : null;
   if (cpuSensor && curFan) {
+    const fanPct = maxRPM > minRPM ? Math.max(0, Math.min(100, ((curFan.currentRPM - minRPM) / (maxRPM - minRPM)) * 100)) : 0;
     const curX = Math.max(padL, Math.min(w - padR, toX(cpuSensor.temp)));
-    const curY = Math.max(padT, Math.min(padT + graphH, toY(curFan.currentRPM)));
+    const curY = Math.max(padT, Math.min(padT + graphH, toY(fanPct)));
 
     // Outer Aura
     ctx.beginPath();

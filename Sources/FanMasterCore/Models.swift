@@ -76,11 +76,21 @@ public struct FanSensor: Identifiable, Codable, Sendable {
 
 public struct CurvePoint: Codable, Sendable {
     public var temperature: Double  // °C
-    public var fanSpeed: Double     // RPM
+    public var fanSpeed: Double     // Potencia en % (0–100) o RPM legado (>100)
     
     public init(temperature: Double, fanSpeed: Double) {
         self.temperature = temperature
         self.fanSpeed = fanSpeed
+    }
+    
+    /// Normaliza el valor a un porcentaje relativo de 0% a 100%
+    public var percentage: Double {
+        if fanSpeed <= 100.0 {
+            return max(0.0, min(100.0, fanSpeed))
+        }
+        // Retrocompatibilidad: Si viene como RPM absoluto legado (ej. 1,800 - 5,500 RPM)
+        let normalized = ((fanSpeed - 1800.0) / (5500.0 - 1800.0)) * 100.0
+        return max(0.0, min(100.0, normalized))
     }
 }
 
@@ -102,26 +112,39 @@ public struct FanProfile: Identifiable, Codable, Sendable {
         self.isAutomatic = isAutomatic
     }
     
-    /// Compute target RPM for a given temperature using linear interpolation between curve points
-    public func targetRPM(for temperature: Double) -> Double {
+    /// Calcula el porcentaje de potencia relativo (0% - 100%) para una temperatura dada
+    public func targetPercentage(for temperature: Double) -> Double {
         let sorted = curvePoints.sorted { $0.temperature < $1.temperature }
-        guard !sorted.isEmpty else { return 1200 }
+        guard !sorted.isEmpty else { return 0.0 }
         
-        if temperature <= sorted.first!.temperature { return sorted.first!.fanSpeed }
-        if temperature >= sorted.last!.temperature  { return sorted.last!.fanSpeed  }
+        if temperature <= sorted.first!.temperature { return sorted.first!.percentage }
+        if temperature >= sorted.last!.temperature  { return sorted.last!.percentage  }
         
         for i in 0..<(sorted.count - 1) {
             let lo = sorted[i]
             let hi = sorted[i + 1]
             if temperature >= lo.temperature && temperature <= hi.temperature {
+                guard hi.temperature > lo.temperature else { return lo.percentage }
                 let t = (temperature - lo.temperature) / (hi.temperature - lo.temperature)
-                return lo.fanSpeed + t * (hi.fanSpeed - lo.fanSpeed)
+                return lo.percentage + t * (hi.percentage - lo.percentage)
             }
         }
-        return sorted.last!.fanSpeed
+        return sorted.last!.percentage
     }
     
-    // MARK: - Built-in profiles
+    /// Calcula el RPM objetivo para una temperatura adaptándose a los límites físicos del ventilador
+    public func targetRPM(for temperature: Double, minRPM: Double, maxRPM: Double) -> Double {
+        let pct = targetPercentage(for: temperature)
+        let target = minRPM + (maxRPM - minRPM) * (pct / 100.0)
+        return Swift.max(minRPM, Swift.min(maxRPM, target))
+    }
+    
+    /// Sobrecarga retrocompatible con límites por defecto (1200 - 5500 RPM)
+    public func targetRPM(for temperature: Double) -> Double {
+        targetRPM(for: temperature, minRPM: 1200, maxRPM: 5500)
+    }
+    
+    // MARK: - Built-in profiles (Relativos en % de potencia)
     
     public static var silent: FanProfile {
         FanProfile(
@@ -130,10 +153,10 @@ public struct FanProfile: Identifiable, Codable, Sendable {
             emoji: "🤫",
             sensorKey: "TC0D",
             curvePoints: [
-                CurvePoint(temperature: 45, fanSpeed: 1200),
-                CurvePoint(temperature: 65, fanSpeed: 2000),
-                CurvePoint(temperature: 80, fanSpeed: 3500),
-                CurvePoint(temperature: 90, fanSpeed: 5500),
+                CurvePoint(temperature: 45, fanSpeed: 0),     // minRPM (0%)
+                CurvePoint(temperature: 65, fanSpeed: 18),    // 18%
+                CurvePoint(temperature: 80, fanSpeed: 50),    // 50%
+                CurvePoint(temperature: 90, fanSpeed: 100),   // maxRPM (100%)
             ]
         )
     }
@@ -145,10 +168,10 @@ public struct FanProfile: Identifiable, Codable, Sendable {
             emoji: "⚖️",
             sensorKey: "TC0D",
             curvePoints: [
-                CurvePoint(temperature: 40, fanSpeed: 1500),
-                CurvePoint(temperature: 55, fanSpeed: 2500),
-                CurvePoint(temperature: 70, fanSpeed: 3800),
-                CurvePoint(temperature: 85, fanSpeed: 5500),
+                CurvePoint(temperature: 40, fanSpeed: 5),     // 5%
+                CurvePoint(temperature: 55, fanSpeed: 25),    // 25%
+                CurvePoint(temperature: 70, fanSpeed: 60),    // 60%
+                CurvePoint(temperature: 85, fanSpeed: 100),   // 100%
             ]
         )
     }
@@ -160,10 +183,10 @@ public struct FanProfile: Identifiable, Codable, Sendable {
             emoji: "🚀",
             sensorKey: "TC0D",
             curvePoints: [
-                CurvePoint(temperature: 35, fanSpeed: 2000),
-                CurvePoint(temperature: 50, fanSpeed: 3000),
-                CurvePoint(temperature: 65, fanSpeed: 4500),
-                CurvePoint(temperature: 75, fanSpeed: 5500),
+                CurvePoint(temperature: 35, fanSpeed: 20),    // 20%
+                CurvePoint(temperature: 50, fanSpeed: 45),    // 45%
+                CurvePoint(temperature: 65, fanSpeed: 75),    // 75%
+                CurvePoint(temperature: 75, fanSpeed: 100),   // 100%
             ]
         )
     }
@@ -175,8 +198,8 @@ public struct FanProfile: Identifiable, Codable, Sendable {
             emoji: "🌪️",
             sensorKey: "TC0D",
             curvePoints: [
-                CurvePoint(temperature: 0, fanSpeed: 5500),
-                CurvePoint(temperature: 100, fanSpeed: 5500),
+                CurvePoint(temperature: 0, fanSpeed: 100),
+                CurvePoint(temperature: 100, fanSpeed: 100),
             ]
         )
     }

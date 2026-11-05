@@ -87,23 +87,25 @@ Sprint 5: Robustez, Hardening y Pruebas en Hardware Real
 
 ---
 
-### 🏃 Sprint 2: Abstracción de Ventiladores y Curvas Relativas
+### 🏃 Sprint 2: Abstracción de Ventiladores y Curvas Relativas (✅ COMPLETADO)
 **Objetivo:** Adaptar el control y visualización para cualquier número de ventiladores (incluyendo portátiles pasivos) y evitar sobre-revolucionar o forzar valores inválidos de RPM.
 
-* **Tarea 2.1 — Normalización de Curvas Térmicas por Porcentaje:**
-  - Reestructurar el cálculo en `FanProfile`: los puntos de la curva definirán temperatura (°C) vs. porcentaje de potencia (0% – 100%).
-  - En tiempo de ejecución, calcular el RPM objetivo aplicando la interpolación sobre los límites físicos leídos del SMC:
+* **Tarea 2.1 — Normalización de Curvas Térmicas por Porcentaje (✅):**
+  - Reestructurado el cálculo en `FanProfile` y `CurvePoint`: puntos definidos por porcentaje de potencia (0% – 100%).
+  - Cálculo adaptativo dinámico en tiempo de ejecución:
     $$\text{Target RPM} = \text{MinRPM} + (\text{MaxRPM} - \text{MinRPM}) \times \frac{\%}{100}$$
-  - Guardar retrocompatibilidad con configuraciones existentes.
-* **Tarea 2.2 — Soporte para Portátiles Fanless (0 Ventiladores):**
-  - Detectar cuando `state.fans.length === 0` (ej. MacBook Air M1/M2/M3).
-  - Ocultar controles de revoluciones y mostrar una tarjeta informativa estilizada: *"Disipación Pasiva — Sin ventiladores mecánicos"*.
-* **Tarea 2.3 — Soporte Multi-Ventilador (2 o más Ventiladores):**
-  - Si el equipo cuenta con 2 ventiladores (ej. MacBook Pro con ventilador de CPU y ventilador de GPU):
-    - Mostrar selector de ventilador o tarjetas gemelas compactas.
-    - Permitir aplicar la misma curva a ambos (*Sync Fans*) o perfiles independientes.
-* **Tarea 2.4 — Adaptación del Canvas de Curvas:**
-  - Permitir alternar el eje Y del gráfico entre **RPM Absolutos** (calculados según el ventilador seleccionado) y **Porcentaje de Potencia (%)**.
+  - Clamping estricto con `Swift.max(minRPM, Swift.min(maxRPM, target))` y retrocompatibilidad total con valores legados en RPM absoluto (> 100).
+* **Tarea 2.2 — Soporte para Portátiles Fanless (0 Ventiladores) (✅):**
+  - Detección reactiva de equipos pasivos (`fans.isEmpty` / `state.fans.length === 0`).
+  - Tarjeta estilizada informativa *"Refrigeración Pasiva (Fanless) — 0 dB"* en la interfaz.
+  - Adaptación del menú de barra superior (`AppDelegate`) para mostrar `Pasivo` o solo temperatura sin placeholders vacíos.
+* **Tarea 2.3 — Soporte Multi-Ventilador (2 o más Ventiladores) (✅):**
+  - Nombrado contextual de ventiladores en `SMCReaderWriter`: *Ventilador Principal*, *Ventilador Izquierdo (CPU)* y *Ventilador Derecho (GPU)*.
+  - Selector por pestañas `[Todos (Sync)]` y ventiladores individuales en la interfaz.
+  - Desglose dinámico con velocímetros individuales y RPM promedio sincronizado.
+* **Tarea 2.4 — Adaptación del Canvas de Curvas (✅):**
+  - Eje Y normalizado al 0% – 100% de potencia con marcas de escala y cálculo de RPMs físicos en los puntos de control.
+  - Punto de operación en tiempo real (`Live Dot`) ajustado dinámicamente al porcentaje de potencia del ventilador.
 
 ---
 

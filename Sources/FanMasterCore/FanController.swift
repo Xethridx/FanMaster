@@ -52,27 +52,45 @@ public class FanController {
         try? writer.restoreAutoControl()
     }
     
-    /// Set a fixed RPM for all fans (manual override)
-    public func setFixed(rpm: Double, fanIndex: Int) throws {
+    /// Set a fixed RPM for a specific fan or all fans (manual override)
+    public func setFixed(rpm: Double, fanIndex: Int? = nil) throws {
         stopControl()
         let fans = reader.readAllFans()
-        guard fanIndex < fans.count else { return }
-        let fan = fans[fanIndex]
-        let clamped = max(fan.minimumRPM, min(fan.maximumRPM, rpm))
-        try writer.setFanManualControl(fanIndex, enabled: true)
-        try writer.setFanTargetRPM(fanIndex, rpm: clamped)
-        lastSetRPM[fanIndex] = clamped
+        for fan in fans {
+            if fanIndex == nil || fan.index == fanIndex {
+                let clamped = max(fan.minimumRPM, min(fan.maximumRPM, rpm))
+                try writer.setFanManualControl(fan.index, enabled: true)
+                try writer.setFanTargetRPM(fan.index, rpm: clamped)
+                lastSetRPM[fan.index] = clamped
+            }
+        }
+    }
+    
+    /// Set a fixed percentage (0% – 100%) for a specific fan or all fans (manual override)
+    public func setFixed(percentage: Double, fanIndex: Int? = nil) throws {
+        stopControl()
+        let fans = reader.readAllFans()
+        for fan in fans {
+            if fanIndex == nil || fan.index == fanIndex {
+                let targetRPM = fan.minimumRPM + (fan.maximumRPM - fan.minimumRPM) * (max(0, min(100, percentage)) / 100.0)
+                let clamped = max(fan.minimumRPM, min(fan.maximumRPM, targetRPM))
+                try writer.setFanManualControl(fan.index, enabled: true)
+                try writer.setFanTargetRPM(fan.index, rpm: clamped)
+                lastSetRPM[fan.index] = clamped
+            }
+        }
     }
     
     // MARK: - Private
     
     private func applyProfileTick(_ profile: FanProfile) {
         guard let temp = reader.temperature(for: profile.sensorKey) else { return }
-        let targetRPM = profile.targetRPM(for: temp)
-        
         let fans = reader.readAllFans()
+        
         for fan in fans {
+            let targetRPM = profile.targetRPM(for: temp, minRPM: fan.minimumRPM, maxRPM: fan.maximumRPM)
             let last = lastSetRPM[fan.index] ?? -1
+            
             // Apply hysteresis — only update if change is significant
             if abs(targetRPM - last) > hysteresis {
                 let clamped = max(fan.minimumRPM, min(fan.maximumRPM, targetRPM))

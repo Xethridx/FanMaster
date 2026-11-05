@@ -237,9 +237,12 @@ func main() {
                     "history": monitor.fanHistory[fan.index]?.points.map { ["t": $0.timestamp.timeIntervalSince1970, "v": $0.value] } ?? []
                 ]
             }
+            let isFanless = fans.isEmpty
             let data: [String: Any] = [
                 "temperatures": temps,
                 "fans": fans,
+                "fanCount": fans.count,
+                "isFanless": isFanless,
                 "cpuUsage": monitor.cpuUsage,
                 "activeProfile": monitor.controller.activeProfile?.id ?? "none",
                 "isRoot": isRoot,
@@ -264,10 +267,46 @@ func main() {
                     "sensorKey": p.sensorKey,
                     "isAutomatic": p.isAutomatic,
                     "isActive": monitor.controller.activeProfile?.id == p.id,
-                    "curvePoints": p.curvePoints.map { ["temperature": $0.temperature, "fanSpeed": $0.fanSpeed] }
+                    "curvePoints": p.curvePoints.map { [
+                        "temperature": $0.temperature,
+                        "fanSpeed": $0.fanSpeed,
+                        "percentage": $0.percentage
+                    ] }
                 ]
             }
             return (200, "application/json", jsonString(profilesData))
+            
+        case ("POST", "/api/control/fixed"):
+            guard isRoot else {
+                return (403, "application/json", jsonString(["error": "Se requiere root para controlar los ventiladores"]))
+            }
+            let components = rawPath.split(separator: "?")
+            var targetRPM: Double?
+            var targetPct: Double?
+            var fanIndex: Int?
+            if components.count > 1 {
+                let query = String(components[1])
+                for param in query.split(separator: "&") {
+                    let kv = param.split(separator: "=")
+                    guard kv.count == 2 else { continue }
+                    let k = String(kv[0]), v = String(kv[1])
+                    if k == "rpm", let r = Double(v) { targetRPM = r }
+                    if (k == "pct" || k == "percentage"), let p = Double(v) { targetPct = p }
+                    if k == "fan", let idx = Int(v) { fanIndex = idx }
+                }
+            }
+            do {
+                if let pct = targetPct {
+                    try monitor.controller.setFixed(percentage: pct, fanIndex: fanIndex)
+                } else if let rpm = targetRPM {
+                    try monitor.controller.setFixed(rpm: rpm, fanIndex: fanIndex)
+                }
+                config.activeProfileId = "manual"
+                saveConfig(config)
+                return (200, "application/json", jsonString(["ok": true]))
+            } catch {
+                return (500, "application/json", jsonString(["error": error.localizedDescription]))
+            }
             
         case ("POST", "/api/profile/apply"):
             guard isRoot else {

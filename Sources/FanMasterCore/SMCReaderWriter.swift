@@ -99,9 +99,24 @@ public class SMCReader {
         let count = fanCount()
         var fans: [FanSensor] = []
         for i in 0..<count {
+            let fanName: String
+            if count == 1 {
+                fanName = "Ventilador Principal"
+            } else if count == 2 {
+                fanName = (i == 0) ? "Ventilador Izquierdo (CPU)" : "Ventilador Derecho (GPU)"
+            } else {
+                if i == 0 {
+                    fanName = "Ventilador 1 (CPU)"
+                } else if i == 1 {
+                    fanName = "Ventilador 2 (GPU)"
+                } else {
+                    fanName = "Ventilador \(i + 1)"
+                }
+            }
+            
             let fan = FanSensor(
                 index: i,
-                name: "Ventilador \(i + 1)",
+                name: fanName,
                 currentRPM: fanCurrentRPM(i),
                 minimumRPM: fanMinRPM(i),
                 maximumRPM: fanMaxRPM(i),

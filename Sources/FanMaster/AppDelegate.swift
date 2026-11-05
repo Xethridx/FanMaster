@@ -150,25 +150,49 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         }
         
         let tempVal = primarySensor?.currentTemp ?? 0
-        let fan = monitor.fans.first
-        let fanRPM = Int(round(fan?.currentRPM ?? 0))
         let tempInt = Int(round(tempVal))
-        
         let displayTemp = tempInt > 0 ? "\(tempInt)°C" : "--°C"
-        let displayRPM = fanRPM > 0 ? "\(fanRPM) RPM" : "---- RPM"
+        let isFanless = monitor.fans.isEmpty
         
         let alertPrefix = (tempVal >= config.alertTempThreshold && tempVal > 0) ? "⚠️ " : ""
         
-        if config.menuBarDisplayMode == "tempOnly" {
-            statusItem.button?.title = "\(alertPrefix)\(displayTemp)"
-        } else if config.menuBarDisplayMode == "rpmOnly" {
-            statusItem.button?.title = "\(alertPrefix)\(displayRPM)"
+        if isFanless {
+            if config.menuBarDisplayMode == "rpmOnly" {
+                statusItem.button?.title = "\(alertPrefix)Pasivo"
+            } else {
+                statusItem.button?.title = "\(alertPrefix)\(displayTemp)"
+            }
+            statusMenuItem.title = "\(primarySensor?.name ?? "CPU Die"): \(displayTemp)"
+            fanMenuItem.title = "Enfriamiento: Disipación Pasiva"
         } else {
-            statusItem.button?.title = "\(alertPrefix)\(displayTemp)  \(displayRPM)"
+            let primaryFan = monitor.fans.first
+            let fanRPM = Int(round(primaryFan?.currentRPM ?? 0))
+            let displayRPM = fanRPM > 0 ? "\(fanRPM) RPM" : "---- RPM"
+            
+            if monitor.fans.count > 1 {
+                let avgRPM = Int(round(monitor.fans.map(\.currentRPM).reduce(0, +) / Double(monitor.fans.count)))
+                let multiRPM = avgRPM > 0 ? "\(avgRPM) RPM" : "---- RPM"
+                if config.menuBarDisplayMode == "tempOnly" {
+                    statusItem.button?.title = "\(alertPrefix)\(displayTemp)"
+                } else if config.menuBarDisplayMode == "rpmOnly" {
+                    statusItem.button?.title = "\(alertPrefix)\(multiRPM)"
+                } else {
+                    statusItem.button?.title = "\(alertPrefix)\(displayTemp)  \(multiRPM)"
+                }
+                statusMenuItem.title = "\(primarySensor?.name ?? "CPU Die"): \(displayTemp)"
+                fanMenuItem.title = "\(monitor.fans.count) Ventiladores (\(displayRPM) CPU)"
+            } else {
+                if config.menuBarDisplayMode == "tempOnly" {
+                    statusItem.button?.title = "\(alertPrefix)\(displayTemp)"
+                } else if config.menuBarDisplayMode == "rpmOnly" {
+                    statusItem.button?.title = "\(alertPrefix)\(displayRPM)"
+                } else {
+                    statusItem.button?.title = "\(alertPrefix)\(displayTemp)  \(displayRPM)"
+                }
+                statusMenuItem.title = "\(primarySensor?.name ?? "CPU Die"): \(displayTemp)"
+                fanMenuItem.title = "\(primaryFan?.name ?? "Ventilador"): \(displayRPM)"
+            }
         }
-        
-        statusMenuItem.title = "\(primarySensor?.name ?? "CPU Die"): \(displayTemp)"
-        fanMenuItem.title = "Ventilador: \(displayRPM)"
         
         let activeId: String
         if isRoot {
